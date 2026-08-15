@@ -1,0 +1,130 @@
+@import "tailwindcss";
+
+/* 1. Configure Tailwind v4 manual dark mode class */
+@variant dark (&:where(.dark, .dark *));
+
+/* 2. Theme definitions using standard CSS custom properties */
+:root {
+  --background: #ffffff;
+  --foreground: #171717;
+
+  /* Free plan (default) - Indigo */
+  --color-primary-val: 79 70 229;
+  --color-primary-fg-val: 255 255 255;
+  --color-primary-light-val: 129 140 248;
+  --color-accent-val: 167 139 250;
+  --color-accent-fg-val: 255 255 255;
+  --color-surface-val: 255 255 255;
+  --color-text-val: 15 23 42;
+}
+
+.dark {
+  --background: #0a0a0a;
+  --foreground: #ededed;
+
+  /* Dark mode overrides */
+  --color-primary-val: 99 102 241;
+  --color-primary-fg-val: 255 255 255;
+  --color-primary-light-val: 129 140 248;
+  --color-accent-val: 139 92 246;
+  --color-accent-fg-val: 255 255 255;
+  --color-surface-val: 15 23 42;
+  --color-text-val: 241 245 249;
+}
+
+/* Plan Themes */
+.plan-standard {
+  --color-primary-val: 37 99 235;
+  --color-primary-fg-val: 255 255 255;
+  --color-primary-light-val: 96 165 250;
+  --color-accent-val: 59 130 246;
+  --color-accent-fg-val: 255 255 255;
+  --color-surface-val: 240 249 255;
+  --color-text-val: 15 23 42;
+}
+
+.plan-enterprise {
+  --color-primary-val: 217 119 6;
+  --color-primary-fg-val: 255 255 255;
+  --color-primary-light-val: 251 191 36;
+  --color-accent-val: 245 158 11;
+  --color-accent-fg-val: 0 0 0;
+  --color-surface-val: 255 251 235;
+  --color-text-val: 15 23 42;
+}
+
+/* 3. Inject colors & keyframe animations directly into Tailwind v4 theme engine */
+@theme {
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+
+  --color-primary: rgb(var(--color-primary-val) / <alpha-value>);
+  --color-primary-foreground: rgb(var(--color-primary-fg-val) / <alpha-value>);
+  --color-primary-light: rgb(var(--color-primary-light-val) / <alpha-value>);
+  --color-accent: rgb(var(--color-accent-val) / <alpha-value>);
+  --color-accent-foreground: rgb(var(--color-accent-fg-val) / <alpha-value>);
+  --color-surface: rgb(var(--color-surface-val) / <alpha-value>);
+  --color-text-primary: rgb(var(--color-text-val) / <alpha-value>);
+
+  /* Custom Animations */
+  --animate-shimmer: shimmer 2s infinite;
+  --animate-glow-pulse: glow-pulse 4s ease-in-out infinite;
+  --animate-fade-in: fadeIn 0.3s ease-out forwards;
+  --animate-fade-out: fadeOut 0.3s ease-in forwards;
+  --animate-slide-up: slideUp 0.4s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+  --animate-slide-down: slideDown 0.4s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+  --animate-scale-pop: scalePop 0.2s cubic-bezier(0.34, 1.56, 0.64, 1) forwards;
+  --animate-float: float 3s ease-in-out infinite;
+
+  @keyframes shimmer {
+    0% { transform: translateX(-100%); }
+    100% { transform: translateX(100%); }
+  }
+  @keyframes glow-pulse {
+    0%, 100% { opacity: 0.2; }
+    50% { opacity: 0.35; }
+  }
+  @keyframes fadeIn {
+    0% { opacity: 0; }
+    100% { opacity: 1; }
+  }
+  @keyframes fadeOut {
+    0% { opacity: 1; }
+    100% { opacity: 0; }
+  }
+  @keyframes slideUp {
+    0% { opacity: 0; transform: translateY(12px); }
+    100% { opacity: 1; transform: translateY(0); }
+  }
+  @keyframes slideDown {
+    0% { opacity: 0; transform: translateY(-12px); }
+    100% { opacity: 1; transform: translateY(0); }
+  }
+  @keyframes scalePop {
+    0% { opacity: 0; transform: scale(0.95); }
+    100% { opacity: 1; transform: scale(1); }
+  }
+  @keyframes float {
+    0%, 100% { transform: translateY(0); }
+    50% { transform: translateY(-6px); }
+  }
+}
+
+@theme {
+  /* Legacy v3 Gradient Utility Aliases */
+  --utility-bg-gradient-to-r: linear-gradient(to right, var(--tw-gradient-stops));
+  --utility-bg-gradient-to-l: linear-gradient(to left, var(--tw-gradient-stops));
+  --utility-bg-gradient-to-t: linear-gradient(to top, var(--tw-gradient-stops));
+  --utility-bg-gradient-to-b: linear-gradient(to bottom, var(--tw-gradient-stops));
+  --utility-bg-gradient-to-tr: linear-gradient(to top right, var(--tw-gradient-stops));
+  --utility-bg-gradient-to-tl: linear-gradient(to top left, var(--tw-gradient-stops));
+  --utility-bg-gradient-to-br: linear-gradient(to bottom right, var(--tw-gradient-stops));
+  --utility-bg-gradient-to-bl: linear-gradient(to bottom left, var(--tw-gradient-stops));
+}
+
+body {
+  background-color: var(--background);
+  color: var(--foreground);
+  font-family: Arial, Helvetica, sans-serif;
+  transition: background-color 0.3s ease, color 0.3s ease;
+}
