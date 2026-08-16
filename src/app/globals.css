@@ -130,19 +130,20 @@ body {
 }
 
 /* ═══════════════════════════════════════════════════════════════════════════
-   MOBILE VISIBILITY OVERRIDE – FORCES ALL CONTENT VISIBLE ON SMALL SCREENS
-   This must be placed last to override any other rules (especially Framer Motion
-   inline styles and Tailwind gradient text).
+   MOBILE VISIBILITY OVERRIDE (LIGHT MODE PRIORITY)
+   Forces all content to be visible on screens ≤ 768px.
+   Works for light theme by default, with dark‑mode overrides following.
    ═══════════════════════════════════════════════════════════════════════════ */
 @media (max-width: 768px) {
-  /* Force every element to be fully opaque and static */
+  /* ---- 1. Force every element to be fully opaque and static ---- */
   * {
     opacity: 1 !important;
     transform: none !important;
     animation: none !important;
+    transition: none !important;
   }
 
-  /* Kill any inline opacity / transform set by Framer Motion */
+  /* ---- 2. Kill any Framer Motion inline styles that hide content ---- */
   [style*="opacity: 0"] {
     opacity: 1 !important;
   }
@@ -150,10 +151,11 @@ body {
     transform: none !important;
   }
 
-  /* Make all gradient text solid and visible (light mode) */
+  /* ---- 3. Make ALL gradient text solid & visible (light mode) ---- */
   .text-transparent,
-  .bg-clip-text.text-transparent,
-  [class*="bg-gradient-to-"].text-transparent {
+  .bg-clip-text,
+  [class*="text-transparent"],
+  [class*="bg-clip-text"] {
     color: #4f46e5 !important;                 /* Indigo-600 */
     -webkit-text-fill-color: #4f46e5 !important;
     background: none !important;
@@ -161,23 +163,31 @@ body {
     -webkit-background-clip: border-box !important;
   }
 
-  /* Dark mode overrides for gradient text */
-  .dark .text-transparent,
-  .dark .bg-clip-text.text-transparent,
-  .dark [class*="bg-gradient-to-"].text-transparent {
-    color: #e0e7ff !important;                 /* Indigo-100 */
-    -webkit-text-fill-color: #e0e7ff !important;
+  /* Also target elements that use gradient text via arbitrary classes */
+  [class*="bg-gradient-to-"] {
+    -webkit-text-fill-color: #4f46e5 !important;
+    color: #4f46e5 !important;
     background: none !important;
     background-clip: border-box !important;
     -webkit-background-clip: border-box !important;
   }
 
-  /* Ensure any element with animated gradient background stays visible */
-  .bg-gradient-to-r,
-  .bg-gradient-to-tr,
-  .bg-gradient-to-br,
-  .bg-gradient-to-tl,
-  .bg-gradient-to-bl {
-    /* Do not modify – these are fine; only text gradient was broken */
+  /* ---- 4. Ensure sections with whileInView are visible ---- */
+  section {
+    opacity: 1 !important;
+    transform: none !important;
+  }
+
+  /* ---- 5. Dark mode overrides (in case user toggles) ---- */
+  .dark .text-transparent,
+  .dark .bg-clip-text,
+  .dark [class*="text-transparent"],
+  .dark [class*="bg-clip-text"],
+  .dark [class*="bg-gradient-to-"] {
+    color: #e0e7ff !important;                 /* Indigo-100 */
+    -webkit-text-fill-color: #e0e7ff !important;
+    background: none !important;
+    background-clip: border-box !important;
+    -webkit-background-clip: border-box !important;
   }
 }
