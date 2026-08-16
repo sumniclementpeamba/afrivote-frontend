@@ -1,7 +1,7 @@
 'use client';
 
 import { useEffect, useState } from 'react';
-import { useRouter, usePathname } from 'next/navigation';
+import { useRouter, usePathname, useSearchParams } from 'next/navigation';
 import { useAuth } from '@/app/providers';
 import { useTheme } from 'next-themes';
 import Link from 'next/link';
@@ -16,12 +16,12 @@ import { isSubscriptionExpired } from '@/utils/subscription';
 export default function DashboardLayout({ children }: { children: React.ReactNode }) {
   const router = useRouter();
   const pathname = usePathname();
+  const searchParams = useSearchParams();
   const { user, logout, plan, subscriptionEndsAt } = useAuth();
   const [token, setToken] = useState<string | null>(null);
   const [userRole, setUserRole] = useState<string | null>(null);
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const [orgLogo, setOrgLogo] = useState<string | null>(null);
-  const [debug, setDebug] = useState('');
 
   const { resolvedTheme, setTheme } = useTheme();
   const [mounted, setMounted] = useState(false);
@@ -34,10 +34,17 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
   const isRenewalPage = pathname === '/dashboard/renewal';
 
   useEffect(() => {
+    // If token is passed via URL (for private browsing support), save it to localStorage
+    const urlToken = searchParams.get('token');
+    const urlRole = searchParams.get('role');
+
+    if (urlToken) {
+      localStorage.setItem('token', urlToken);
+      localStorage.setItem('userRole', urlRole || 'ORG_ADMIN');
+    }
+
     const t = localStorage.getItem('token');
     const role = localStorage.getItem('userRole');
-    const expiry = localStorage.getItem('subscriptionEndsAt');
-    setDebug(`Token: ${t ? 'YES' : 'NO'}, Role: ${role || 'none'}, Expiry: ${expiry || 'none'}`);
 
     if (!t) {
       router.push('/login');
@@ -55,7 +62,7 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
     setToken(t);
     setUserRole(role);
     setOrgLogo(localStorage.getItem('orgLogo'));
-  }, [router]);
+  }, [router, searchParams]);
 
   useEffect(() => {
     if (token && subscriptionExpired && !isRenewalPage) {
@@ -80,11 +87,6 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
         <div className="text-center">
           <div className="w-8 h-8 border-2 border-indigo-600 border-t-transparent rounded-full animate-spin mx-auto mb-4"></div>
           <p className="text-slate-600 dark:text-slate-400 text-sm">Checking authentication...</p>
-          {debug && (
-            <div className="fixed top-2 left-2 right-2 z-[999] bg-red-500/90 text-white text-xs p-3 rounded-xl shadow-lg overflow-auto max-h-40">
-              {debug}
-            </div>
-          )}
         </div>
       </div>
     );
@@ -107,13 +109,6 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
 
   return (
     <div className="min-h-screen bg-slate-50 dark:bg-slate-950 text-slate-900 dark:text-slate-100 flex relative antialiased selection:bg-indigo-500 selection:text-white">
-      {/* Debug Panel */}
-      {debug && (
-        <div className="fixed top-2 left-2 right-2 z-[999] bg-blue-500/90 text-white text-xs p-3 rounded-xl shadow-lg overflow-auto max-h-40">
-          {debug}
-        </div>
-      )}
-
       {/* Mobile Backdrop */}
       {sidebarOpen && (
         <div
