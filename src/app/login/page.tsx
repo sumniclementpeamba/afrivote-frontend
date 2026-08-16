@@ -5,13 +5,12 @@ import Link from 'next/link';
 import api from '@/lib/api';
 import toast from 'react-hot-toast';
 import { useAuth } from '@/app/providers';
-import { motion, AnimatePresence } from 'framer-motion';
 import {
   Zap, Mail, Lock, ArrowRight, Loader2,
   ShieldAlert, Shield, Eye, EyeOff,
 } from 'lucide-react';
 
-// ─── Decorative animated dot grid ────────────────────────────────────────────
+// ─── Decorative animated dot grid (CSS only, no JS) ──────────────────────────
 const DotGrid = () => (
   <div
     className="absolute inset-0 pointer-events-none"
@@ -23,7 +22,7 @@ const DotGrid = () => (
   />
 );
 
-// ─── Floating orb ─────────────────────────────────────────────────────────────
+// ─── Floating orb (CSS animation, no JS) ─────────────────────────────────────
 const Orb = ({
   className,
   delay = 0,
@@ -31,10 +30,9 @@ const Orb = ({
   className: string;
   delay?: number;
 }) => (
-  <motion.div
+  <div
     className={`absolute rounded-full blur-[130px] pointer-events-none ${className}`}
-    animate={{ scale: [1, 1.12, 1], opacity: [0.6, 1, 0.6] }}
-    transition={{ duration: 6, repeat: Infinity, delay, ease: 'easeInOut' }}
+    style={{ animation: `float-orb 6s ease-in-out ${delay}s infinite` }}
   />
 );
 
@@ -64,12 +62,12 @@ const Field = ({
   icon: React.ElementType;
   suffix?: React.ReactNode;
 }) => (
-  <div className="group/field space-y-2">
-    <label className="block text-[10px] font-bold uppercase tracking-[0.18em] text-slate-400 group-focus-within/field:text-indigo-400 transition-colors duration-200">
+  <div className="space-y-2">
+    <label className="block text-[10px] font-bold uppercase tracking-[0.18em] text-slate-400">
       {label}
     </label>
     <div className="relative">
-      <span className="absolute inset-y-0 left-0 flex items-center pl-4 text-slate-400 group-focus-within/field:text-indigo-400 transition-colors duration-200 pointer-events-none">
+      <span className="absolute inset-y-0 left-0 flex items-center pl-4 text-slate-400 pointer-events-none">
         <Icon className="w-4 h-4" />
       </span>
       <input
@@ -100,7 +98,7 @@ export default function AdminLoginPage() {
   const [password, setPassword] = useState('');
   const [showPw, setShowPw] = useState(false);
   const [loading, setLoading] = useState(false);
-  const [debug, setDebug] = useState('');           // <-- DEBUG STATE
+  const [debug, setDebug] = useState('Ready');
   const router = useRouter();
   const { login } = useAuth();
 
@@ -168,23 +166,28 @@ export default function AdminLoginPage() {
         }
       }
 
-      // 6. Save auth state and manually set fallback subscription expiry
+      // 6. Save auth state and fallback expiry
       const fallbackExpiry = new Date(Date.now() + 28 * 24 * 60 * 60 * 1000).toISOString();
       localStorage.setItem('subscriptionEndsAt', fallbackExpiry);
 
       login(token, user);
 
-      // Also ensure role/token are present before redirect
       localStorage.setItem('token', token);
       localStorage.setItem('userRole', user.role);
 
       setDebug(`Token set: ${localStorage.getItem('token') ? 'YES' : 'NO'}, Role: ${user.role}`);
       toast.success('Welcome back!');
 
-      // Slight delay to allow React state updates before full reload
+      // Use router.replace instead of window.location.href for smoother client transition
       setTimeout(() => {
-        window.location.href = '/dashboard';
-      }, 100);
+        router.replace('/dashboard');
+        // Fallback: if router.replace doesn't navigate, force full reload after another delay
+        setTimeout(() => {
+          if (window.location.pathname !== '/dashboard') {
+            window.location.href = '/dashboard';
+          }
+        }, 500);
+      }, 150);
     } catch (err: any) {
       setDebug(`Error: ${JSON.stringify(err.response?.data || err.message || err)}`);
       if (err.response?.data?.detail) {
@@ -216,33 +219,19 @@ export default function AdminLoginPage() {
       <Orb className="top-[38%] left-[32%]    w-[260px] h-[260px] bg-indigo-900/[0.06]" delay={4} />
 
       {/* Logo */}
-      <motion.div
-        initial={{ opacity: 0, y: -18 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ duration: 0.5 }}
-        className="mb-6 sm:mb-8 relative z-10"
-      >
+      <div className="mb-6 sm:mb-8 relative z-10">
         <a href="/" className="flex items-center gap-2.5 group">
-          <motion.div
-            whileHover={{ rotate: 360 }}
-            transition={{ duration: 0.5 }}
-            className="p-2 bg-indigo-500/[0.10] rounded-xl border border-indigo-500/[0.18] shadow-lg"
-          >
+          <div className="p-2 bg-indigo-500/[0.10] rounded-xl border border-indigo-500/[0.18] shadow-lg">
             <Zap className="w-5 h-5 text-indigo-400" />
-          </motion.div>
+          </div>
           <span className="text-2xl font-black text-indigo-300 tracking-tight">
             AfriVote
           </span>
         </a>
-      </motion.div>
+      </div>
 
       {/* Card */}
-      <motion.div
-        initial={{ opacity: 0, scale: 0.94, y: 28 }}
-        animate={{ opacity: 1, scale: 1, y: 0 }}
-        transition={{ duration: 0.55, ease: [0.16, 1, 0.3, 1] }}
-        className="relative w-full max-w-md z-10 mx-auto"
-      >
+      <div className="relative w-full max-w-md z-10 mx-auto">
         <div className="absolute -inset-px rounded-[2rem] bg-gradient-to-br from-indigo-500/25 via-purple-500/10 to-transparent pointer-events-none" />
 
         <div className="relative bg-white/[0.06] backdrop-blur-2xl rounded-[2rem] border border-white/[0.10] shadow-[0_32px_80px_rgba(0,0,0,0.5)] overflow-hidden">
@@ -251,14 +240,9 @@ export default function AdminLoginPage() {
 
           <div className="p-5 sm:p-8">
             <div className="text-center mb-6 sm:mb-8">
-              <motion.div
-                initial={{ scale: 0.8, opacity: 0 }}
-                animate={{ scale: 1, opacity: 1 }}
-                transition={{ delay: 0.15, type: 'spring', stiffness: 200 }}
-                className="inline-flex items-center justify-center w-[50px] h-[50px] sm:w-[60px] sm:h-[60px] rounded-2xl bg-gradient-to-br from-indigo-600 to-purple-700 shadow-xl shadow-indigo-900/40 mb-4 sm:mb-5"
-              >
+              <div className="inline-flex items-center justify-center w-[50px] h-[50px] sm:w-[60px] sm:h-[60px] rounded-2xl bg-gradient-to-br from-indigo-600 to-purple-700 shadow-xl shadow-indigo-900/40 mb-4 sm:mb-5">
                 <Shield className="w-6 h-6 sm:w-7 sm:h-7 text-white" />
-              </motion.div>
+              </div>
               <h1 className="text-[1.5rem] sm:text-[2rem] font-black tracking-tight mb-1 text-white">
                 Admin Login
               </h1>
@@ -284,7 +268,11 @@ export default function AdminLoginPage() {
                 suffix={
                   <button
                     type="button"
-                    onClick={() => setShowPw((v) => !v)}
+                    onClick={(e) => {
+                      e.preventDefault();
+                      setShowPw((v) => !v);
+                      setDebug(`Eye clicked, showPw=${!showPw}`);
+                    }}
                     className="text-slate-400 hover:text-slate-300 transition-colors p-1"
                   >
                     {showPw
@@ -294,60 +282,38 @@ export default function AdminLoginPage() {
                 }
               />
 
-              <motion.div whileHover={{ scale: 1.02 }} whileTap={{ scale: 0.98 }} className="pt-1">
-                <button
-                  type="submit"
-                  disabled={loading}
-                  className="relative w-full py-3.5 rounded-xl font-bold text-sm text-white overflow-hidden
-                    bg-gradient-to-r from-indigo-600 to-purple-600
-                    hover:from-indigo-500 hover:to-purple-500
-                    shadow-xl shadow-indigo-950/60 hover:shadow-indigo-500/25
-                    disabled:opacity-50 disabled:pointer-events-none
-                    flex items-center justify-center gap-2 group/btn
-                    transition-all duration-300"
-                >
-                  <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/[0.08] to-transparent animate-shimmer pointer-events-none" />
-                  <AnimatePresence mode="wait">
-                    {loading ? (
-                      <motion.span
-                        key="loading"
-                        initial={{ opacity: 0, y: 8 }}
-                        animate={{ opacity: 1, y: 0 }}
-                        exit={{ opacity: 0, y: -8 }}
-                        className="flex items-center gap-2 relative z-10"
-                      >
-                        <Loader2 className="w-4 h-4 animate-spin" />
-                        Authenticating…
-                      </motion.span>
-                    ) : (
-                      <motion.span
-                        key="idle"
-                        initial={{ opacity: 0, y: -8 }}
-                        animate={{ opacity: 1, y: 0 }}
-                        exit={{ opacity: 0, y: 8 }}
-                        className="flex items-center gap-2 relative z-10"
-                      >
-                        Authorize Session
-                        <ArrowRight className="w-4 h-4 group-hover/btn:translate-x-1 transition-transform" />
-                      </motion.span>
-                    )}
-                  </AnimatePresence>
-                </button>
-              </motion.div>
+              <button
+                type="submit"
+                disabled={loading}
+                className="relative w-full py-3.5 rounded-xl font-bold text-sm text-white overflow-hidden
+                  bg-gradient-to-r from-indigo-600 to-purple-600
+                  hover:from-indigo-500 hover:to-purple-500
+                  shadow-xl shadow-indigo-950/60 hover:shadow-indigo-500/25
+                  disabled:opacity-50 disabled:pointer-events-none
+                  flex items-center justify-center gap-2
+                  transition-all duration-300"
+              >
+                {loading ? (
+                  <>
+                    <Loader2 className="w-4 h-4 animate-spin" />
+                    Authenticating…
+                  </>
+                ) : (
+                  <>
+                    Authorize Session
+                    <ArrowRight className="w-4 h-4" />
+                  </>
+                )}
+              </button>
             </form>
 
-            <motion.div
-              initial={{ opacity: 0, y: 8 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ delay: 0.35 }}
-              className="mt-5 sm:mt-6 flex items-start gap-2.5 p-3 sm:p-3.5 rounded-xl bg-amber-500/[0.06] border border-amber-500/[0.12]"
-            >
+            <div className="mt-5 sm:mt-6 flex items-start gap-2.5 p-3 sm:p-3.5 rounded-xl bg-amber-500/[0.06] border border-amber-500/[0.12]">
               <ShieldAlert className="w-4 h-4 text-amber-400 shrink-0 mt-0.5" />
               <p className="text-amber-200/55 text-[11px] sm:text-xs leading-relaxed">
                 This portal is exclusively for internal organization administrators.
                 Voters must use the designated voter gateway.
               </p>
-            </motion.div>
+            </div>
 
             <div className="mt-5 pt-4 border-t border-white/[0.05] flex items-center justify-center gap-4 sm:gap-5 flex-wrap">
               <SecBadge label="AES-256" />
@@ -356,14 +322,9 @@ export default function AdminLoginPage() {
             </div>
           </div>
         </div>
-      </motion.div>
+      </div>
 
-      <motion.p
-        initial={{ opacity: 0 }}
-        animate={{ opacity: 1 }}
-        transition={{ delay: 0.3 }}
-        className="relative z-10 text-xs sm:text-sm text-slate-600 mt-5 sm:mt-6 text-center px-4"
-      >
+      <p className="relative z-10 text-xs sm:text-sm text-slate-600 mt-5 sm:mt-6 text-center px-4">
         Looking for the voting gateway?{' '}
         <Link
           href="/vote/login"
@@ -371,7 +332,7 @@ export default function AdminLoginPage() {
         >
           Voter Portal
         </Link>
-      </motion.p>
+      </p>
     </div>
   );
 }
