@@ -12,6 +12,7 @@ import {
 } from 'lucide-react';
 import PlanBadge from '@/components/PlanBadge';
 import { isSubscriptionExpired } from '@/utils/subscription';
+export const dynamic = 'force-dynamic'; 
 
 export default function DashboardLayout({ children }: { children: React.ReactNode }) {
   const router = useRouter();
