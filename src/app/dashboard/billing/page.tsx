@@ -9,6 +9,7 @@ import toast from 'react-hot-toast';
 import {
   CheckCircle, Loader2, ArrowRight, Sparkles, Building2, Rocket, Zap, ShieldCheck, RefreshCw,
 } from 'lucide-react';
+export const dynamic = 'force-dynamic';
 
 const plans = [
   {
