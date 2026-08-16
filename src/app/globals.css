@@ -128,3 +128,15 @@ body {
   font-family: Arial, Helvetica, sans-serif;
   transition: background-color 0.3s ease, color 0.3s ease;
 }
+
+/* ─── Mobile Visibility Fix ───────────────────────────────────────────
+   Forces all elements to be visible on small screens.
+   This overrides any inline opacity/transform set by Framer Motion.
+   Remove after animations are properly fixed if desired.
+────────────────────────────────────────────────────────────────────── */
+@media (max-width: 768px) {
+  * {
+    opacity: 1 !important;
+    transform: none !important;
+  }
+}
