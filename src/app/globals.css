@@ -129,13 +129,9 @@ body {
   transition: background-color 0.3s ease, color 0.3s ease;
 }
 
-/* ═══════════════════════════════════════════════════════════════════════════
-   MOBILE VISIBILITY OVERRIDE (LIGHT MODE PRIORITY)
-   Forces all content to be visible on screens ≤ 768px.
-   Works for light theme by default, with dark‑mode overrides following.
-   ═══════════════════════════════════════════════════════════════════════════ */
+/* ─── Mobile Visibility Fix (Force solid backgrounds for gradients) ─────────── */
 @media (max-width: 768px) {
-  /* ---- 1. Force every element to be fully opaque and static ---- */
+  /* Force every element to be visible */
   * {
     opacity: 1 !important;
     transform: none !important;
@@ -143,7 +139,7 @@ body {
     transition: none !important;
   }
 
-  /* ---- 2. Kill any Framer Motion inline styles that hide content ---- */
+  /* Kill any inline opacity/transform set by Framer Motion */
   [style*="opacity: 0"] {
     opacity: 1 !important;
   }
@@ -151,11 +147,12 @@ body {
     transform: none !important;
   }
 
-  /* ---- 3. Make ALL gradient text solid & visible (light mode) ---- */
+  /* Force all gradient text to solid indigo (light theme) */
   .text-transparent,
   .bg-clip-text,
   [class*="text-transparent"],
-  [class*="bg-clip-text"] {
+  [class*="bg-clip-text"],
+  [class*="bg-gradient-to-"] {
     color: #4f46e5 !important;                 /* Indigo-600 */
     -webkit-text-fill-color: #4f46e5 !important;
     background: none !important;
@@ -163,22 +160,20 @@ body {
     -webkit-background-clip: border-box !important;
   }
 
-  /* Also target elements that use gradient text via arbitrary classes */
-  [class*="bg-gradient-to-"] {
-    -webkit-text-fill-color: #4f46e5 !important;
-    color: #4f46e5 !important;
-    background: none !important;
-    background-clip: border-box !important;
-    -webkit-background-clip: border-box !important;
+  /* Force all gradient backgrounds to solid indigo so white icons are visible */
+  .bg-gradient-to-r,
+  .bg-gradient-to-l,
+  .bg-gradient-to-t,
+  .bg-gradient-to-b,
+  .bg-gradient-to-tr,
+  .bg-gradient-to-tl,
+  .bg-gradient-to-br,
+  .bg-gradient-to-bl {
+    background-image: none !important;
+    background-color: #4f46e5 !important;      /* Indigo-600 */
   }
 
-  /* ---- 4. Ensure sections with whileInView are visible ---- */
-  section {
-    opacity: 1 !important;
-    transform: none !important;
-  }
-
-  /* ---- 5. Dark mode overrides (in case user toggles) ---- */
+  /* Dark mode overrides */
   .dark .text-transparent,
   .dark .bg-clip-text,
   .dark [class*="text-transparent"],
@@ -189,5 +184,17 @@ body {
     background: none !important;
     background-clip: border-box !important;
     -webkit-background-clip: border-box !important;
+  }
+
+  .dark .bg-gradient-to-r,
+  .dark .bg-gradient-to-l,
+  .dark .bg-gradient-to-t,
+  .dark .bg-gradient-to-b,
+  .dark .bg-gradient-to-tr,
+  .dark .bg-gradient-to-tl,
+  .dark .bg-gradient-to-br,
+  .dark .bg-gradient-to-bl {
+    background-image: none !important;
+    background-color: #312e81 !important;      /* Indigo-900 */
   }
 }
