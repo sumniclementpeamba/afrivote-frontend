@@ -10,6 +10,7 @@ import {
   Vote, Mail, Lock, ArrowRight, Loader2,
   ShieldCheck, Shield, Eye, EyeOff,
 } from 'lucide-react';
+import { data } from 'framer-motion/client';
 
 // ─── Decorative animated dot grid ────────────────────────────────────────────
 const DotGrid = () => (
@@ -119,6 +120,7 @@ export default function VoterLoginPage() {
         role: profile.data.role,
         organization: profile.data.organization || null,
         firstName: profile.data.first_name || 'Voter',
+        email: profile.data.email || '',
         profilePicture: profile.data.profile_picture || null,
       };
 

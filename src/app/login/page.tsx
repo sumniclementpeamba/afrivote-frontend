@@ -10,6 +10,7 @@ import {
   Zap, Mail, Lock, ArrowRight, Loader2,
   ShieldAlert, Shield, Eye, EyeOff,
 } from 'lucide-react';
+import { data } from 'framer-motion/m';
 
 // ─── Decorative animated dot grid ────────────────────────────────────────────
 const DotGrid = () => (
@@ -120,6 +121,7 @@ export default function AdminLoginPage() {
         role: profile.data.role,
         organization: profile.data.organization || null,
         firstName: profile.data.first_name || 'User',
+        email: profile.data.email || '',
         profilePicture: profile.data.profile_picture || null,
       };
 

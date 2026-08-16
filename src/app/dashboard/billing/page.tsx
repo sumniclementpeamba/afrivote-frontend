@@ -1,11 +1,11 @@
 'use client';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
+import { motion, useInView, AnimatePresence, Variants } from 'framer-motion';
 import api from '@/lib/api';
 import { useAuth } from '@/app/providers';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { useEffect, useState } from 'react';
 import toast from 'react-hot-toast';
-import { motion } from 'framer-motion';
 import {
   CheckCircle, Loader2, ArrowRight, Sparkles, Building2, Rocket, Zap, ShieldCheck, RefreshCw,
 } from 'lucide-react';
