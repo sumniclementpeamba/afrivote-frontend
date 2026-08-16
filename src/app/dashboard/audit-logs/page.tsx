@@ -1,19 +1,34 @@
 'use client';
-import { useQuery } from '@tanstack/react-query';
+import { useEffect, useState } from 'react';
 import api from '@/lib/api';
 import { FileText, Loader2, Clock, User, Layers, Radio } from 'lucide-react';
 
 export const dynamic = 'force-dynamic';
 
 export default function AuditLogsPage() {
-  const { data: logs, isLoading } = useQuery({
-    queryKey: ['audit-logs'],
-    queryFn: async () => {
-      const res = await api.get('/api/audit-logs/');
-      return res.data;
-    },
-    refetchInterval: 10000,
-  });
+  const [logs, setLogs] = useState<any[] | null>(null);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    let isMounted = true;
+    const fetchLogs = async () => {
+      try {
+        const res = await api.get('/api/audit-logs/');
+        if (isMounted) setLogs(res.data);
+      } catch (err) {
+        console.error('Failed to fetch audit logs', err);
+      } finally {
+        if (isMounted) setLoading(false);
+      }
+    };
+
+    fetchLogs();
+    const interval = setInterval(fetchLogs, 10000);
+    return () => {
+      isMounted = false;
+      clearInterval(interval);
+    };
+  }, []);
 
   return (
     <div className="max-w-7xl mx-auto space-y-8 pb-12 relative">
@@ -37,7 +52,7 @@ export default function AuditLogsPage() {
       </div>
 
       {/* Main Content */}
-      {isLoading ? (
+      {loading ? (
         <div className="flex flex-col justify-center items-center h-[50vh] gap-3">
           <Loader2 className="w-10 h-10 animate-spin text-indigo-600 dark:text-indigo-400" />
           <p className="text-xs font-medium text-slate-500 dark:text-slate-400">Retrieving audit activity logs...</p>
@@ -100,7 +115,7 @@ export default function AuditLogsPage() {
       )}
 
       {/* Empty State */}
-      {!isLoading && (!logs || logs.length === 0) && (
+      {!loading && (!logs || logs.length === 0) && (
         <div className="text-center py-20 bg-white/50 dark:bg-slate-900/50 backdrop-blur-xl border border-slate-200/80 dark:border-slate-800/80 rounded-3xl">
           <div className="w-16 h-16 bg-slate-100 dark:bg-slate-800 rounded-2xl flex items-center justify-center mx-auto mb-4 text-slate-400">
             <FileText className="w-8 h-8 stroke-1" />
