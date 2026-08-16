@@ -7,6 +7,20 @@ import {
   ChevronRight, Lock, TrendingUp, Globe, Eye, Check, Sparkles, Building2,
 } from 'lucide-react';
 
+// ─── useIsMobile Hook ────────────────────────────────────────────────────────
+function useIsMobile(breakpoint = 768) {
+  const [isMobile, setIsMobile] = useState(false);
+
+  useEffect(() => {
+    const check = () => setIsMobile(window.innerWidth < breakpoint);
+    check();
+    window.addEventListener('resize', check);
+    return () => window.removeEventListener('resize', check);
+  }, [breakpoint]);
+
+  return isMobile;
+}
+
 // ─── Animated Number ──────────────────────────────────────────────────────────
 const AnimatedNumber = ({ value, suffix = '+' }: { value: number; suffix?: string }) => {
   const [display, setDisplay] = useState(0);
@@ -139,6 +153,7 @@ const VoteMockup = () => (
 export default function LandingPage() {
   const [activeTab, setActiveTab] = useState('security');
   const feature = FEATURES.find((f) => f.id === activeTab)!;
+  const isMobile = useIsMobile();
 
   return (
     <div className="min-h-screen bg-slate-50/50 dark:bg-slate-950 text-slate-900 dark:text-slate-50 font-sans overflow-x-hidden selection:bg-indigo-500 selection:text-white">
@@ -151,14 +166,14 @@ export default function LandingPage() {
       <nav className="fixed top-0 left-0 right-0 z-50 bg-white/80 dark:bg-slate-950/80 backdrop-blur-2xl border-b border-slate-200/60 dark:border-slate-800/80 transition-all duration-300">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex justify-between items-center h-16">
-            <motion.div initial={{ opacity: 0, x: -20 }} animate={{ opacity: 1, x: 0 }} className="flex items-center gap-3 cursor-pointer">
+            <motion.div initial={isMobile ? false : { opacity: 0, x: -20 }} animate={{ opacity: 1, x: 0 }} className="flex items-center gap-3 cursor-pointer">
               <motion.div whileHover={{ rotate: 12, scale: 1.05 }} transition={{ duration: 0.2 }} className="p-2 bg-gradient-to-tr from-indigo-600 via-indigo-700 to-purple-600 rounded-2xl shadow-lg shadow-indigo-500/20">
                 <Zap className="w-5 h-5 text-white" />
               </motion.div>
               <span className="text-2xl font-black bg-gradient-to-r from-indigo-600 via-purple-600 to-indigo-800 dark:from-indigo-400 dark:to-purple-400 bg-clip-text text-transparent tracking-tight">AfriVote</span>
             </motion.div>
 
-            <motion.div initial={{ opacity: 0, x: 20 }} animate={{ opacity: 1, x: 0 }} className="flex items-center gap-2 sm:gap-3">
+            <motion.div initial={isMobile ? false : { opacity: 0, x: 20 }} animate={{ opacity: 1, x: 0 }} className="flex items-center gap-2 sm:gap-3">
               <Link href="/register" className="hidden sm:inline-flex text-emerald-600 dark:text-emerald-400 hover:text-emerald-500 font-semibold px-3 py-2 rounded-xl hover:bg-emerald-50 dark:hover:bg-emerald-950/40 transition-all text-sm">
                 Register Organisation
               </Link>
@@ -181,7 +196,7 @@ export default function LandingPage() {
           <div className="grid lg:grid-cols-2 gap-12 lg:gap-16 items-center">
             <div>
               <motion.div
-                initial={{ opacity: 0, scale: 0.95 }}
+                initial={isMobile ? false : { opacity: 0, scale: 0.95 }}
                 animate={{ opacity: 1, scale: 1 }}
                 transition={{ duration: 0.45 }}
                 className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-indigo-50 dark:bg-indigo-950/60 border border-indigo-100 dark:border-indigo-900 text-indigo-700 dark:text-indigo-300 text-xs font-bold mb-6 shadow-sm"
@@ -191,7 +206,7 @@ export default function LandingPage() {
               </motion.div>
 
               <motion.h1
-                initial={{ opacity: 0, y: 30 }}
+                initial={isMobile ? false : { opacity: 0, y: 30 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ duration: 0.6, ease: [0.16, 1, 0.3, 1] }}
                 className="text-4xl sm:text-6xl font-black text-slate-900 dark:text-white tracking-tight mb-6 leading-[1.1]"
@@ -203,7 +218,7 @@ export default function LandingPage() {
               </motion.h1>
 
               <motion.p
-                initial={{ opacity: 0, y: 20 }}
+                initial={isMobile ? false : { opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ duration: 0.6, delay: 0.15 }}
                 className="text-lg text-slate-600 dark:text-slate-300 mb-10 leading-relaxed max-w-xl font-medium"
@@ -212,7 +227,7 @@ export default function LandingPage() {
               </motion.p>
 
               <motion.div
-                initial={{ opacity: 0, y: 20 }}
+                initial={isMobile ? false : { opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ duration: 0.6, delay: 0.25 }}
                 className="flex flex-col sm:flex-row gap-4"
@@ -238,7 +253,7 @@ export default function LandingPage() {
               </motion.div>
 
               <motion.div
-                initial={{ opacity: 0 }}
+                initial={isMobile ? false : { opacity: 0 }}
                 animate={{ opacity: 1 }}
                 transition={{ delay: 0.45 }}
                 className="flex flex-wrap gap-6 mt-12 pt-8 border-t border-slate-200/60 dark:border-slate-800/60"
@@ -259,7 +274,7 @@ export default function LandingPage() {
             </div>
 
             <motion.div
-              initial={{ opacity: 0, x: 30 }}
+              initial={isMobile ? false : { opacity: 0, x: 30 }}
               animate={{ opacity: 1, x: 0 }}
               transition={{ duration: 0.75, delay: 0.2 }}
               className="hidden lg:flex justify-center"
@@ -275,8 +290,10 @@ export default function LandingPage() {
         <div className="max-w-6xl mx-auto px-4">
           <motion.div
             variants={stagger}
-            initial="hidden"
-            animate="visible"
+            initial={isMobile ? false : "hidden"}
+            whileInView={isMobile ? undefined : "visible"}
+            animate={isMobile ? "visible" : undefined}
+            viewport={{ once: true }}
             className="grid grid-cols-2 md:grid-cols-4 gap-8 text-center"
           >
             {[
@@ -301,15 +318,19 @@ export default function LandingPage() {
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="text-center mb-20">
             <motion.span
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
+              initial={isMobile ? false : { opacity: 0 }}
+              whileInView={isMobile ? undefined : { opacity: 1 }}
+              animate={isMobile ? { opacity: 1 } : undefined}
+              viewport={{ once: true }}
               className="text-indigo-600 dark:text-indigo-400 font-extrabold text-xs tracking-[0.2em] uppercase"
             >
               Simple Process
             </motion.span>
             <motion.h2
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
+              initial={isMobile ? false : { opacity: 0, y: 20 }}
+              whileInView={isMobile ? undefined : { opacity: 1, y: 0 }}
+              animate={isMobile ? { opacity: 1, y: 0 } : undefined}
+              viewport={{ once: true }}
               className="text-3xl sm:text-5xl font-black text-slate-900 dark:text-white tracking-tight mt-2 mb-4"
             >
               How AfriVote Works
@@ -322,8 +343,10 @@ export default function LandingPage() {
 
           <motion.div
             variants={stagger}
-            initial="hidden"
-            animate="visible"
+            initial={isMobile ? false : "hidden"}
+            whileInView={isMobile ? undefined : "visible"}
+            animate={isMobile ? "visible" : undefined}
+            viewport={{ once: true, margin: '-80px' }}
             className="grid grid-cols-1 md:grid-cols-3 gap-8 relative"
           >
             <div className="hidden md:block absolute top-[3.5rem] left-[20%] right-[20%] h-px border-t-2 border-dashed border-indigo-200 dark:border-indigo-900 z-0" />
@@ -363,15 +386,19 @@ export default function LandingPage() {
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="text-center mb-14">
             <motion.span
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
+              initial={isMobile ? false : { opacity: 0 }}
+              whileInView={isMobile ? undefined : { opacity: 1 }}
+              animate={isMobile ? { opacity: 1 } : undefined}
+              viewport={{ once: true }}
               className="text-indigo-600 dark:text-indigo-400 font-extrabold text-xs tracking-[0.2em] uppercase"
             >
               Platform Capabilities
             </motion.span>
             <motion.h2
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
+              initial={isMobile ? false : { opacity: 0, y: 20 }}
+              whileInView={isMobile ? undefined : { opacity: 1, y: 0 }}
+              animate={isMobile ? { opacity: 1, y: 0 } : undefined}
+              viewport={{ once: true }}
               className="text-3xl sm:text-5xl font-black text-slate-900 dark:text-white tracking-tight mt-2 mb-4"
             >
               Everything You Need
@@ -436,15 +463,19 @@ export default function LandingPage() {
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="text-center mb-16">
             <motion.span
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
+              initial={isMobile ? false : { opacity: 0 }}
+              whileInView={isMobile ? undefined : { opacity: 1 }}
+              animate={isMobile ? { opacity: 1 } : undefined}
+              viewport={{ once: true }}
               className="text-indigo-600 dark:text-indigo-400 font-extrabold text-xs tracking-[0.2em] uppercase"
             >
               For Administrators
             </motion.span>
             <motion.h2
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
+              initial={isMobile ? false : { opacity: 0, y: 20 }}
+              whileInView={isMobile ? undefined : { opacity: 1, y: 0 }}
+              animate={isMobile ? { opacity: 1, y: 0 } : undefined}
+              viewport={{ once: true }}
               className="text-3xl sm:text-5xl font-black text-slate-900 dark:text-white tracking-tight mt-2 mb-4"
             >
               Admin Operations Lifecycle
@@ -456,8 +487,10 @@ export default function LandingPage() {
 
           <motion.div
             variants={stagger}
-            initial="hidden"
-            animate="visible"
+            initial={isMobile ? false : "hidden"}
+            whileInView={isMobile ? undefined : "visible"}
+            animate={isMobile ? "visible" : undefined}
+            viewport={{ once: true, margin: '-80px' }}
             className="grid grid-cols-1 md:grid-cols-2 gap-6 lg:gap-8"
           >
             {[
@@ -487,12 +520,14 @@ export default function LandingPage() {
         </div>
       </section>
 
-      {/* ══ NEW: Register Your Organisation Section ═══════════════════════════ */}
+      {/* Register Your Organisation Section */}
       <section className="py-24 bg-white dark:bg-slate-900/40 border-y border-slate-200/60 dark:border-slate-800/80">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <motion.div
-            initial={{ opacity: 0, y: 30 }}
-            animate={{ opacity: 1, y: 0 }}
+            initial={isMobile ? false : { opacity: 0, y: 30 }}
+            whileInView={isMobile ? undefined : { opacity: 1, y: 0 }}
+            animate={isMobile ? { opacity: 1, y: 0 } : undefined}
+            viewport={{ once: true }}
             className="max-w-3xl mx-auto text-center"
           >
             <div className="p-5 bg-emerald-50 dark:bg-emerald-950/40 text-emerald-600 dark:text-emerald-400 rounded-3xl inline-flex mx-auto mb-6">
@@ -532,14 +567,18 @@ export default function LandingPage() {
       <section className="py-20 px-4 relative overflow-hidden">
         <div className="max-w-5xl mx-auto">
           <motion.div
-            initial={{ opacity: 0, scale: 0.96 }}
-            animate={{ opacity: 1, scale: 1 }}
+            initial={isMobile ? false : { opacity: 0, scale: 0.96 }}
+            whileInView={isMobile ? undefined : { opacity: 1, scale: 1 }}
+            animate={isMobile ? { opacity: 1, scale: 1 } : undefined}
+            viewport={{ once: true }}
             className="relative bg-gradient-to-tr from-indigo-950 via-indigo-900 to-purple-950 rounded-[2.5rem] shadow-2xl text-center py-16 px-6 sm:px-14 overflow-hidden border border-indigo-800/40"
           >
             <div className="absolute inset-0 bg-[radial-gradient(circle_at_top_right,rgba(255,255,255,0.1),transparent)] pointer-events-none" />
             <motion.h2
-              initial={{ opacity: 0, y: 12 }}
-              animate={{ opacity: 1, y: 0 }}
+              initial={isMobile ? false : { opacity: 0, y: 12 }}
+              whileInView={isMobile ? undefined : { opacity: 1, y: 0 }}
+              animate={isMobile ? { opacity: 1, y: 0 } : undefined}
+              viewport={{ once: true }}
               className="text-3xl sm:text-5xl font-black text-white mb-5 relative z-10 tracking-tight"
             >
               Ready to Upgrade Scale?
@@ -563,15 +602,19 @@ export default function LandingPage() {
       <section className="py-24 bg-white dark:bg-slate-900/40 relative">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
           <motion.span
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
+            initial={isMobile ? false : { opacity: 0 }}
+            whileInView={isMobile ? undefined : { opacity: 1 }}
+            animate={isMobile ? { opacity: 1 } : undefined}
+            viewport={{ once: true }}
             className="text-indigo-600 dark:text-indigo-400 font-extrabold text-xs tracking-[0.2em] uppercase"
           >
             The Builders
           </motion.span>
           <motion.h2
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
+            initial={isMobile ? false : { opacity: 0, y: 20 }}
+            whileInView={isMobile ? undefined : { opacity: 1, y: 0 }}
+            animate={isMobile ? { opacity: 1, y: 0 } : undefined}
+            viewport={{ once: true }}
             className="text-3xl sm:text-5xl font-black text-slate-900 dark:text-white tracking-tight mt-2 mb-3"
           >
             Meet Our Engineering Team
@@ -588,8 +631,10 @@ export default function LandingPage() {
             ].map((member, idx) => (
               <motion.div
                 key={idx}
-                initial={{ opacity: 0, y: 30 }}
-                animate={{ opacity: 1, y: 0 }}
+                initial={isMobile ? false : { opacity: 0, y: 30 }}
+                whileInView={isMobile ? undefined : { opacity: 1, y: 0 }}
+                animate={isMobile ? { opacity: 1, y: 0 } : undefined}
+                viewport={{ once: true }}
                 transition={{ delay: idx * 0.15 }}
                 whileHover={{ y: -6 }}
                 className="bg-slate-50 dark:bg-slate-900 rounded-3xl p-8 border border-slate-200/80 dark:border-slate-800 shadow-sm hover:shadow-xl transition-all duration-300 group text-center"
