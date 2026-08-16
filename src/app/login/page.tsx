@@ -107,7 +107,7 @@ export default function AdminLoginPage() {
     e.preventDefault();
     setLoading(true);
     try {
-      // 1. Get JWT token – NOTE trailing slash
+      // 1. Get JWT token
       const res = await api.post('/api/auth/login/', { email, password });
       const token = res.data.access;
 
@@ -161,12 +161,22 @@ export default function AdminLoginPage() {
         }
       }
 
-      // 6. Save auth state and redirect using full page load to avoid race conditions
+      // 6. Save auth state and manually set fallback subscription expiry
+      const fallbackExpiry = new Date(Date.now() + 28 * 24 * 60 * 60 * 1000).toISOString();
+      localStorage.setItem('subscriptionEndsAt', fallbackExpiry);
+
       login(token, user);
+
+      // Also ensure role/token are present before redirect
+      localStorage.setItem('token', token);
+      localStorage.setItem('userRole', user.role);
+
       toast.success('Welcome back!');
-      // Use window.location.href instead of router.push to force a full reload,
-      // ensuring the provider effect runs with token present.
-      window.location.href = '/dashboard';
+
+      // Slight delay to allow React state updates before full reload
+      setTimeout(() => {
+        window.location.href = '/dashboard';
+      }, 100);
     } catch (err: any) {
       if (err.response?.data?.detail) {
         toast.error(err.response.data.detail);
@@ -204,7 +214,6 @@ export default function AdminLoginPage() {
           >
             <Zap className="w-5 h-5 text-indigo-400" />
           </motion.div>
-          {/* Solid colour text – no gradient/clip to prevent invisibility on mobile */}
           <span className="text-2xl font-black text-indigo-300 tracking-tight">
             AfriVote
           </span>
