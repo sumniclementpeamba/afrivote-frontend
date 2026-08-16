@@ -12,7 +12,6 @@ interface User {
   email: string;
   profilePicture: string | null;
   plan?: string;
-  // subscription expiry date (ISO string)
   subscriptionEndsAt?: string | null;
 }
 
@@ -49,14 +48,12 @@ export default function Providers({ children }: { children: React.ReactNode }) {
   const router = useRouter();
   const [queryClient] = useState(() => new QueryClient());
 
-  // Helper to create a fallback expiry date (now + 28 days)
   const getDefaultExpiry = () => {
     const date = new Date();
     date.setDate(date.getDate() + 28);
     return date.toISOString();
   };
 
-  // Load user from token on mount
   useEffect(() => {
     const storedToken = localStorage.getItem('token');
     if (!storedToken) {
@@ -64,23 +61,18 @@ export default function Providers({ children }: { children: React.ReactNode }) {
       return;
     }
 
-    // Read stored expiry (if any)
+    // Optimistically set token and expiry from localStorage
+    setToken(storedToken);
     const storedExpiry = localStorage.getItem('subscriptionEndsAt');
-    if (storedExpiry) {
-      setSubscriptionEndsAt(storedExpiry);
-    }
+    if (storedExpiry) setSubscriptionEndsAt(storedExpiry);
 
     api.get('/api/auth/me/', { headers: { Authorization: `Bearer ${storedToken}` } })
       .then(res => {
-        setToken(storedToken);
-
-        // Save branding to localStorage
+        // Save branding
         localStorage.setItem('orgLogo', res.data.organization_logo || '');
         localStorage.setItem('orgPrimaryColor', res.data.organization_primary_color || '#4F46E5');
 
-        // Determine subscription expiry: use API value or fallback to 28 days from now
         const expiry = res.data.subscription_ends_at || getDefaultExpiry();
-
         const userData: User = {
           role: res.data.role,
           organization: res.data.organization,
@@ -94,16 +86,24 @@ export default function Providers({ children }: { children: React.ReactNode }) {
         setUser(userData);
         setPlan(userData.plan || null);
         setSubscriptionEndsAt(expiry);
-
-        // Always store expiry (fallback if needed)
         localStorage.setItem('subscriptionEndsAt', expiry);
       })
-      .catch(() => {
-        localStorage.removeItem('token');
-        localStorage.removeItem('userRole');
-        localStorage.removeItem('userOrgId');
-        localStorage.removeItem('voterId');
-        localStorage.removeItem('subscriptionEndsAt');
+      .catch(err => {
+        // Only clear if the API explicitly says 401 (invalid/expired token)
+        if (err?.response?.status === 401) {
+          localStorage.removeItem('token');
+          localStorage.removeItem('userRole');
+          localStorage.removeItem('userOrgId');
+          localStorage.removeItem('voterId');
+          localStorage.removeItem('subscriptionEndsAt');
+          setToken(null);
+          setUser(null);
+          setPlan(null);
+          setSubscriptionEndsAt(null);
+        } else {
+          // Keep token – likely network/CORS issue, allow dashboard to render or retry
+          console.warn('Profile fetch failed but token kept:', err?.message || err);
+        }
       })
       .finally(() => setLoading(false));
   }, []);
@@ -111,54 +111,42 @@ export default function Providers({ children }: { children: React.ReactNode }) {
   const login = useCallback((newToken: string, newUser: User) => {
     localStorage.setItem('token', newToken);
     localStorage.setItem('userRole', newUser.role);
-    setUser(newUser);
-
     if (newUser.organization) {
       localStorage.setItem('userOrgId', newUser.organization);
     } else {
       localStorage.removeItem('userOrgId');
     }
 
-    // Plan (string)
     if (newUser.plan) {
       localStorage.setItem('userPlan', newUser.plan);
     } else {
       localStorage.removeItem('userPlan');
     }
 
-    // Determine expiry: use provided value or fallback
     const expiry = newUser.subscriptionEndsAt || getDefaultExpiry();
     localStorage.setItem('subscriptionEndsAt', expiry);
-    setSubscriptionEndsAt(expiry);
 
     setToken(newToken);
     setUser({ ...newUser, subscriptionEndsAt: expiry });
     setPlan(newUser.plan || null);
+    setSubscriptionEndsAt(expiry);
 
-    // Fetch branding data immediately after login
     api.get('/api/auth/me/', { headers: { Authorization: `Bearer ${newToken}` } })
       .then(res => {
         localStorage.setItem('orgLogo', res.data.organization_logo || '');
         localStorage.setItem('orgPrimaryColor', res.data.organization_primary_color || '#4F46E5');
-
-        // Update expiry if the API provides a value; otherwise keep existing fallback
         if (res.data.subscription_ends_at) {
-          const apiExpiry = res.data.subscription_ends_at;
-          localStorage.setItem('subscriptionEndsAt', apiExpiry);
-          setSubscriptionEndsAt(apiExpiry);
+          localStorage.setItem('subscriptionEndsAt', res.data.subscription_ends_at);
+          setSubscriptionEndsAt(res.data.subscription_ends_at);
         }
       })
       .catch(() => { /* ignore branding fetch errors */ });
   }, []);
 
-  // Renew subscription: adds 28 days from now
   const renewSubscription = useCallback(() => {
     const newExpiry = getDefaultExpiry();
-
     setSubscriptionEndsAt(newExpiry);
     localStorage.setItem('subscriptionEndsAt', newExpiry);
-
-    // Update user object if needed
     setUser(prev => (prev ? { ...prev, subscriptionEndsAt: newExpiry } : prev));
   }, []);
 
