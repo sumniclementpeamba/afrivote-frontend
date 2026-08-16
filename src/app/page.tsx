@@ -172,7 +172,7 @@ export default function LandingPage() {
               <motion.div whileHover={{ rotate: 12, scale: 1.05 }} transition={{ duration: 0.2 }} className="p-2 bg-gradient-to-tr from-indigo-600 via-indigo-700 to-purple-600 rounded-2xl shadow-lg shadow-indigo-500/20">
                 <Zap className="w-5 h-5 text-white" />
               </motion.div>
-              <span className="text-2xl font-black bg-gradient-to-r from-indigo-600 via-purple-600 to-indigo-800 dark:from-indigo-400 dark:to-purple-400 bg-clip-text text-transparent tracking-tight">AfriVote</span>
+              <span className={`text-2xl font-black tracking-tight ${isMobile ? 'text-indigo-600 dark:text-white' : 'bg-gradient-to-r from-indigo-600 via-purple-600 to-indigo-800 dark:from-indigo-400 dark:to-purple-400 bg-clip-text text-transparent'}`}>AfriVote</span>
             </motion.div>
 
             {/* Desktop Actions */}
@@ -261,7 +261,7 @@ export default function LandingPage() {
                 className="text-4xl sm:text-6xl font-black text-slate-900 dark:text-white tracking-tight mb-6 leading-[1.1]"
               >
                 Secure, Verifiable<br />Elections{' '}
-                <span className="bg-gradient-to-r from-indigo-600 via-purple-600 to-pink-500 bg-clip-text text-transparent">
+                <span className={isMobile ? 'text-indigo-600 dark:text-indigo-400' : 'bg-gradient-to-r from-indigo-600 via-purple-600 to-pink-500 bg-clip-text text-transparent'}>
                   Made Effortless
                 </span>
               </motion.h1>
@@ -352,7 +352,7 @@ export default function LandingPage() {
               { value: 98, label: 'Uptime SLA', suffix: '%' },
             ].map(({ value, label, suffix }) => (
               <motion.div key={label} variants={fadeUp} className="space-y-1">
-                <div className="text-3xl sm:text-4xl font-black bg-gradient-to-r from-indigo-600 via-purple-600 to-indigo-800 dark:from-indigo-400 dark:to-purple-400 bg-clip-text text-transparent">
+                <div className={`text-3xl sm:text-4xl font-black ${isMobile ? 'text-indigo-600 dark:text-white' : 'bg-gradient-to-r from-indigo-600 via-purple-600 to-indigo-800 dark:from-indigo-400 dark:to-purple-400 bg-clip-text text-transparent'}`}>
                   <AnimatedNumber value={value} suffix={suffix} />
                 </div>
                 <p className="text-slate-500 dark:text-slate-400 text-xs font-bold uppercase tracking-wider">{label}</p>
