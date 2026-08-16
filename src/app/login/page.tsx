@@ -10,7 +10,6 @@ import {
   Zap, Mail, Lock, ArrowRight, Loader2,
   ShieldAlert, Shield, Eye, EyeOff,
 } from 'lucide-react';
-import { data } from 'framer-motion/m';
 
 // ─── Decorative animated dot grid ────────────────────────────────────────────
 const DotGrid = () => (
@@ -133,7 +132,7 @@ export default function AdminLoginPage() {
         toast.error('❌ Voters must use the Voter Portal. Redirecting...');
         setLoading(false);
         setTimeout(() => {
-          router.push('/vote/login');
+          window.location.href = '/vote/login';
         }, 1500);
         return;
       }
@@ -157,15 +156,17 @@ export default function AdminLoginPage() {
           localStorage.removeItem('userOrgId');
           toast.error('⏳ Your organisation is pending approval. Please wait for the super admin to approve you.');
           setLoading(false);
-          router.push('/pending-approval');
+          window.location.href = '/pending-approval';
           return;
         }
       }
 
-      // 6. Save auth state and redirect to dashboard
+      // 6. Save auth state and redirect using full page load to avoid race conditions
       login(token, user);
       toast.success('Welcome back!');
-      router.push('/dashboard');
+      // Use window.location.href instead of router.push to force a full reload,
+      // ensuring the provider effect runs with token present.
+      window.location.href = '/dashboard';
     } catch (err: any) {
       if (err.response?.data?.detail) {
         toast.error(err.response.data.detail);
@@ -203,7 +204,8 @@ export default function AdminLoginPage() {
           >
             <Zap className="w-5 h-5 text-indigo-400" />
           </motion.div>
-          <span className="text-2xl font-black bg-gradient-to-r from-indigo-400 via-purple-400 to-indigo-300 bg-clip-text text-transparent tracking-tight">
+          {/* Solid colour text – no gradient/clip to prevent invisibility on mobile */}
+          <span className="text-2xl font-black text-indigo-300 tracking-tight">
             AfriVote
           </span>
         </a>
@@ -232,7 +234,7 @@ export default function AdminLoginPage() {
               >
                 <Shield className="w-6 h-6 sm:w-7 sm:h-7 text-white" />
               </motion.div>
-              <h1 className="text-[1.5rem] sm:text-[2rem] font-black tracking-tight mb-1 bg-gradient-to-br from-white via-slate-100 to-slate-300 bg-clip-text text-transparent">
+              <h1 className="text-[1.5rem] sm:text-[2rem] font-black tracking-tight mb-1 text-white">
                 Admin Login
               </h1>
               <p className="text-slate-400 text-xs sm:text-sm font-medium">System Administration Portal</p>
