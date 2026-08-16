@@ -98,25 +98,21 @@ export default function AdminLoginPage() {
   const [password, setPassword] = useState('');
   const [showPw, setShowPw] = useState(false);
   const [loading, setLoading] = useState(false);
-  const [debug, setDebug] = useState('Ready');
   const router = useRouter();
   const { login } = useAuth();
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setLoading(true);
-    setDebug('Submitting...');
     try {
       // 1. Get JWT token
       const res = await api.post('/api/auth/login/', { email, password });
       const token = res.data.access;
-      setDebug(`Token received: ${token ? 'YES' : 'NO'}`);
 
       // 2. Fetch user profile
       const profile = await api.get('/api/auth/me/', {
         headers: { Authorization: `Bearer ${token}` },
       });
-      setDebug(`Profile fetched: role=${profile.data.role}`);
 
       const user = {
         role: profile.data.role,
@@ -132,7 +128,6 @@ export default function AdminLoginPage() {
         localStorage.removeItem('userRole');
         localStorage.removeItem('userOrgId');
         toast.error('❌ Voters must use the Voter Portal. Redirecting...');
-        setDebug('Blocked: VOTER');
         setLoading(false);
         setTimeout(() => {
           window.location.href = '/vote/login';
@@ -146,7 +141,6 @@ export default function AdminLoginPage() {
         localStorage.removeItem('userRole');
         localStorage.removeItem('userOrgId');
         toast.error('❌ Unauthorized. Admin access only.');
-        setDebug('Blocked: Not admin');
         setLoading(false);
         return;
       }
@@ -159,7 +153,6 @@ export default function AdminLoginPage() {
           localStorage.removeItem('userRole');
           localStorage.removeItem('userOrgId');
           toast.error('⏳ Your organisation is pending approval. Please wait for the super admin to approve you.');
-          setDebug('Blocked: Pending approval');
           setLoading(false);
           window.location.href = '/pending-approval';
           return;
@@ -175,21 +168,12 @@ export default function AdminLoginPage() {
       localStorage.setItem('token', token);
       localStorage.setItem('userRole', user.role);
 
-      setDebug(`Token set: ${localStorage.getItem('token') ? 'YES' : 'NO'}, Role: ${user.role}`);
       toast.success('Welcome back!');
 
-      // Use router.replace instead of window.location.href for smoother client transition
-      setTimeout(() => {
-        router.replace('/dashboard');
-        // Fallback: if router.replace doesn't navigate, force full reload after another delay
-        setTimeout(() => {
-          if (window.location.pathname !== '/dashboard') {
-            window.location.href = '/dashboard';
-          }
-        }, 500);
-      }, 150);
+      // Redirect using full page load with token in URL for private mode support
+      const redirectUrl = `/dashboard?token=${encodeURIComponent(token)}&role=${encodeURIComponent(user.role)}`;
+      window.location.href = redirectUrl;
     } catch (err: any) {
-      setDebug(`Error: ${JSON.stringify(err.response?.data || err.message || err)}`);
       if (err.response?.data?.detail) {
         toast.error(err.response.data.detail);
       } else if (err.response?.status === 401) {
@@ -204,14 +188,6 @@ export default function AdminLoginPage() {
 
   return (
     <div className="relative min-h-screen flex flex-col items-center justify-center overflow-hidden bg-[#060b1c] px-4 py-8 sm:p-4 selection:bg-indigo-500 selection:text-white">
-
-      {/* DEBUG PANEL – visible on screen for mobile debugging */}
-      {debug && (
-        <div className="fixed top-2 left-2 right-2 z-[999] bg-red-500/90 text-white text-xs p-3 rounded-xl shadow-lg overflow-auto max-h-40">
-          {debug}
-        </div>
-      )}
-
       {/* Background */}
       <DotGrid />
       <Orb className="top-[-12%] right-[-8%]  w-[500px] h-[500px] bg-indigo-600/[0.08]" delay={0} />
@@ -271,7 +247,6 @@ export default function AdminLoginPage() {
                     onClick={(e) => {
                       e.preventDefault();
                       setShowPw((v) => !v);
-                      setDebug(`Eye clicked, showPw=${!showPw}`);
                     }}
                     className="text-slate-400 hover:text-slate-300 transition-colors p-1"
                   >
