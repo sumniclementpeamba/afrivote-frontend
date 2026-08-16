@@ -85,9 +85,9 @@ const VoteMockup = () => (
         </div>
 
         {[
-          { name: 'Clement Peamba', votes: 842, pct: 62, color: 'bg-gradient-to-r from-indigo-500 to-indigo-600' },
-          { name: 'Larbi Evans', votes: 415, pct: 31, color: 'bg-gradient-to-r from-purple-500 to-purple-600' },
-          { name: 'Abigail Abrefi', votes: 94, pct: 7, color: 'bg-gradient-to-r from-pink-400 to-rose-500' },
+          { name: 'Clement Peamba', votes: 842, pct: 62 },
+          { name: 'Larbi Evans', votes: 415, pct: 31 },
+          { name: 'Abigail Abrefi', votes: 94, pct: 7 },
         ].map((c) => (
           <div key={c.name} className="space-y-1.5 p-2 rounded-xl hover:bg-slate-50 dark:hover:bg-slate-800/50 transition-colors">
             <div className="flex justify-between text-xs">
@@ -95,11 +95,9 @@ const VoteMockup = () => (
               <span className="text-slate-500 dark:text-slate-400 font-semibold">{c.votes.toLocaleString()} votes</span>
             </div>
             <div className="h-2 bg-slate-100 dark:bg-slate-800 rounded-full overflow-hidden p-0.5">
-              <motion.div
-                className={`h-full rounded-full ${c.color}`}
-                initial={{ width: 0 }}
-                animate={{ width: `${c.pct}%` }}
-                transition={{ duration: 1.4, delay: 0.5, ease: 'easeOut' }}
+              <div
+                className="h-full rounded-full bg-indigo-500"
+                style={{ width: `${c.pct}%` }}
               />
             </div>
           </div>
@@ -443,7 +441,7 @@ export default function LandingPage() {
               <ul className="space-y-3.5">
                 {feature.points.map((pt) => (
                   <li key={pt} className="flex items-center gap-3 text-slate-700 dark:text-slate-200">
-                    <div className={`w-5 h-5 rounded-full bg-gradient-to-br ${feature.from} ${feature.to} flex items-center justify-center shrink-0 shadow-sm`}>
+                    <div className={`w-5 h-5 rounded-full bg-gradient-to-br ${feature.from} ${feature.to} flex items-center justify-center shrink-0 shadow-sm mobile-solid-bg`}>
                       <Check className="w-3 h-3 text-white stroke-[3]" />
                     </div>
                     <span className="font-semibold text-sm">{pt}</span>
@@ -455,7 +453,7 @@ export default function LandingPage() {
             <div className={`relative h-72 rounded-3xl bg-gradient-to-br ${feature.from} ${feature.to} flex items-center justify-center shadow-2xl overflow-hidden mobile-solid-bg`}>
               <div className="absolute inset-0 bg-[radial-gradient(circle_at_top_right,rgba(255,255,255,0.2),transparent)]" />
               <div className="w-40 h-40 rounded-full border-2 border-white/20 animate-ping absolute" />
-              <feature.Icon className="w-24 h-24 text-white/40 relative z-10" />
+              <feature.Icon className="w-24 h-24 text-white relative z-10" />
             </div>
           </div>
         </div>
@@ -538,7 +536,7 @@ export default function LandingPage() {
               <motion.div whileHover={{ scale: 1.03 }} whileTap={{ scale: 0.97 }}>
                 <Link
                   href="/register"
-                  className="inline-flex items-center justify-center gap-2 bg-gradient-to-r from-emerald-600 to-teal-600 hover:from-emerald-500 hover:to-teal-500 text-white text-base font-extrabold px-8 py-4 rounded-2xl shadow-xl shadow-emerald-500/25 transition group w-full sm:w-auto"
+                  className="inline-flex items-center justify-center gap-2 bg-gradient-to-r from-emerald-600 to-teal-600 hover:from-emerald-500 hover:to-teal-500 text-white text-base font-extrabold px-8 py-4 rounded-2xl shadow-xl shadow-emerald-500/25 transition group w-full sm:w-auto mobile-solid-bg"
                 >
                   Register Your Organisation
                   <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
@@ -564,7 +562,7 @@ export default function LandingPage() {
           <motion.div
             initial={{ opacity: 0, scale: 0.96 }}
             animate={{ opacity: 1, scale: 1 }}
-            className="relative bg-gradient-to-tr from-indigo-950 via-indigo-900 to-purple-950 rounded-[2.5rem] shadow-2xl text-center py-16 px-6 sm:px-14 overflow-hidden border border-indigo-800/40"
+            className="relative bg-gradient-to-tr from-indigo-950 via-indigo-900 to-purple-950 rounded-[2.5rem] shadow-2xl text-center py-16 px-6 sm:px-14 overflow-hidden border border-indigo-800/40 mobile-dark-bg"
           >
             <div className="absolute inset-0 bg-[radial-gradient(circle_at_top_right,rgba(255,255,255,0.1),transparent)] pointer-events-none" />
             <motion.h2
