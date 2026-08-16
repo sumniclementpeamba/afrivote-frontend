@@ -562,7 +562,7 @@ export default function LandingPage() {
           <motion.div
             initial={{ opacity: 0, scale: 0.96 }}
             animate={{ opacity: 1, scale: 1 }}
-            className="relative bg-gradient-to-tr from-indigo-950 via-indigo-900 to-purple-950 rounded-[2.5rem] shadow-2xl text-center py-16 px-6 sm:px-14 overflow-hidden border border-indigo-800/40 mobile-dark-bg"
+            className="relative bg-indigo-950 md:bg-gradient-to-tr md:from-indigo-950 md:via-indigo-900 md:to-purple-950 rounded-[2.5rem] shadow-2xl text-center py-16 px-6 sm:px-14 overflow-hidden border border-indigo-800/40"
           >
             <div className="absolute inset-0 bg-[radial-gradient(circle_at_top_right,rgba(255,255,255,0.1),transparent)] pointer-events-none" />
             <motion.h2
