@@ -562,14 +562,13 @@ export default function LandingPage() {
           <motion.div
             initial={{ opacity: 0, scale: 0.96 }}
             animate={{ opacity: 1, scale: 1 }}
-            className="relative bg-indigo-950 md:bg-gradient-to-tr md:from-indigo-950 md:via-indigo-900 md:to-purple-950 rounded-[2.5rem] shadow-2xl text-center py-16 px-6 sm:px-14 overflow-hidden border border-indigo-800/40"
-          >
-            <div className="absolute inset-0 bg-[radial-gradient(circle_at_top_right,rgba(255,255,255,0.1),transparent)] pointer-events-none" />
+            className="relative bg-slate-950 rounded-[2.5rem] shadow-2xl text-center py-16 px-6 sm:px-14 overflow-hidden border border-indigo-800/40"
+           >
             <motion.h2
               initial={{ opacity: 0, y: 12 }}
               animate={{ opacity: 1, y: 0 }}
               className="text-3xl sm:text-5xl font-black text-white mb-5 relative z-10 tracking-tight"
-            >
+             >
               Ready to Upgrade Scale?
             </motion.h2>
             <p className="text-base sm:text-lg text-indigo-100/85 max-w-2xl mx-auto mb-10 relative z-10 leading-relaxed font-medium">
@@ -580,7 +579,7 @@ export default function LandingPage() {
               whileHover={{ scale: 1.05 }}
               whileTap={{ scale: 0.97 }}
               className="inline-flex items-center gap-3 bg-white hover:bg-indigo-50 text-indigo-950 font-black text-base px-8 py-4 rounded-2xl shadow-xl transition-all relative z-10"
-            >
+             >
               Go to Billing <CreditCard className="w-5 h-5 text-indigo-600" />
             </motion.a>
           </motion.div>
