@@ -1,5 +1,5 @@
 'use client';
-import { motion } from 'framer-motion';
+import { motion, useInView, AnimatePresence, Variants } from 'framer-motion';
 import Link from 'next/link';
 import {
   CheckCircle,
@@ -51,7 +51,7 @@ const plans = [
   },
 ];
 
-const container = {
+const container: Variants = {
   hidden: { opacity: 0 },
   show: {
     opacity: 1,
@@ -59,7 +59,7 @@ const container = {
   },
 };
 
-const item = {
+const item: Variants = {
   hidden: { opacity: 0, y: 40 },
   show: { opacity: 1, y: 0, transition: { type: 'spring', stiffness: 100, damping: 20 } },
 };

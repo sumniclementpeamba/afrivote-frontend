@@ -1,5 +1,5 @@
 'use client';
-import { motion, useInView, AnimatePresence } from 'framer-motion';
+import { motion, useInView, AnimatePresence, Variants } from 'framer-motion';
 import { useRef, useState, useEffect } from 'react';
 import Link from 'next/link';
 import {
@@ -32,15 +32,15 @@ const AnimatedNumber = ({ value, suffix = '+' }: { value: number; suffix?: strin
 };
 
 // ─── Animation Variants ───────────────────────────────────────────────────────
-const fadeUp = {
+const fadeUp: Variants = {
   hidden: { opacity: 0, y: 28 },
   visible: { opacity: 1, y: 0, transition: { duration: 0.55, ease: 'easeOut' } },
 };
-const stagger = {
+const stagger: Variants = {
   hidden: { opacity: 0 },
   visible: { opacity: 1, transition: { staggerChildren: 0.11 } },
 };
-const liftCard = {
+const liftCard: Variants = {
   rest: { y: 0, boxShadow: '0 4px 20px rgba(79,70,229,0.05)' },
   hover: { y: -8, boxShadow: '0 24px 48px rgba(79,70,229,0.12)', transition: { duration: 0.28, ease: 'easeOut' } },
 };
