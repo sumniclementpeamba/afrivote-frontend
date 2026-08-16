@@ -1,27 +1,26 @@
 'use client';
-import { useEffect, useState, Suspense } from 'react';
-import { useRouter, useSearchParams } from 'next/navigation';
+import { useEffect, useState } from 'react';
+import { useRouter } from 'next/navigation';
 import api from '@/lib/api';
 import toast from 'react-hot-toast';
 import { Loader2, CheckCircle2, XCircle } from 'lucide-react';
 
-// Optional: keep force-dynamic for extra safety
-export const dynamic = 'force-dynamic';
-
-// ─── Inner component that actually uses useSearchParams ─────────────────────
-function RegistrationSuccessContent() {
+export default function RegistrationSuccessPage() {
   const router = useRouter();
-  const searchParams = useSearchParams();
-  const reference = searchParams.get('reference');
   const [loading, setLoading] = useState(true);
   const [success, setSuccess] = useState(false);
 
   useEffect(() => {
+    // Read the "reference" query parameter directly from the browser URL
+    const params = new URLSearchParams(window.location.search);
+    const reference = params.get('reference');
+
     if (!reference) {
       setLoading(false);
       return;
     }
 
+    // Submit registration using the reference from Paystack
     api.post('/api/organizations/public-register/', {
       organization_name: localStorage.getItem('reg_org_name') || 'Organisation',
       email: localStorage.getItem('reg_email') || '',
@@ -40,7 +39,7 @@ function RegistrationSuccessContent() {
         toast.error(err.response?.data?.error || 'Registration failed');
       })
       .finally(() => setLoading(false));
-  }, [reference, router]);
+  }, [router]);
 
   return (
     <div className="min-h-screen bg-slate-50 dark:bg-slate-950 flex items-center justify-center p-6">
@@ -81,18 +80,5 @@ function RegistrationSuccessContent() {
         )}
       </div>
     </div>
-  );
-}
-
-// ─── Default export wrapped in Suspense ─────────────────────────────────────
-export default function RegistrationSuccessPage() {
-  return (
-    <Suspense fallback={
-      <div className="min-h-screen flex items-center justify-center">
-        <Loader2 className="w-8 h-8 animate-spin text-indigo-600" />
-      </div>
-    }>
-      <RegistrationSuccessContent />
-    </Suspense>
   );
 }
