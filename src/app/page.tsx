@@ -5,6 +5,7 @@ import Link from 'next/link';
 import {
   ArrowRight, Shield, Users, BarChart3, Zap, Star, CreditCard,
   ChevronRight, Lock, TrendingUp, Globe, Eye, Check, Sparkles, Building2,
+  Menu, X
 } from 'lucide-react';
 
 // ─── useIsMobile Hook ────────────────────────────────────────────────────────
@@ -152,6 +153,7 @@ const VoteMockup = () => (
 // ─── Main Landing Page Component ──────────────────────────────────────────────
 export default function LandingPage() {
   const [activeTab, setActiveTab] = useState('security');
+  const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const feature = FEATURES.find((f) => f.id === activeTab)!;
   const isMobile = useIsMobile();
 
@@ -173,8 +175,9 @@ export default function LandingPage() {
               <span className="text-2xl font-black bg-gradient-to-r from-indigo-600 via-purple-600 to-indigo-800 dark:from-indigo-400 dark:to-purple-400 bg-clip-text text-transparent tracking-tight">AfriVote</span>
             </motion.div>
 
-            <motion.div initial={isMobile ? false : { opacity: 0, x: 20 }} animate={{ opacity: 1, x: 0 }} className="flex items-center gap-2 sm:gap-3">
-              <Link href="/register" className="hidden sm:inline-flex text-emerald-600 dark:text-emerald-400 hover:text-emerald-500 font-semibold px-3 py-2 rounded-xl hover:bg-emerald-50 dark:hover:bg-emerald-950/40 transition-all text-sm">
+            {/* Desktop Actions */}
+            <motion.div initial={isMobile ? false : { opacity: 0, x: 20 }} animate={{ opacity: 1, x: 0 }} className="hidden md:flex items-center gap-2 sm:gap-3">
+              <Link href="/register" className="text-emerald-600 dark:text-emerald-400 hover:text-emerald-500 font-semibold px-3 py-2 rounded-xl hover:bg-emerald-50 dark:hover:bg-emerald-950/40 transition-all text-sm">
                 Register Organisation
               </Link>
               <Link href="/login" className="text-slate-600 dark:text-slate-300 hover:text-indigo-600 dark:hover:text-indigo-400 font-semibold px-3 py-2 rounded-xl hover:bg-slate-100 dark:hover:bg-slate-900 transition-all text-sm">
@@ -186,12 +189,58 @@ export default function LandingPage() {
                 </Link>
               </motion.div>
             </motion.div>
+
+            {/* Mobile Menu Toggle Button */}
+            <div className="flex md:hidden items-center">
+              <button
+                onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
+                aria-label="Toggle Navigation Menu"
+                className="p-2 rounded-xl bg-slate-100 dark:bg-slate-900 text-slate-700 dark:text-slate-200 hover:bg-slate-200 dark:hover:bg-slate-800 transition-colors"
+              >
+                {mobileMenuOpen ? <X className="w-6 h-6" /> : <Menu className="w-6 h-6" />}
+              </button>
+            </div>
           </div>
         </div>
+
+        {/* Mobile Navigation Drawer */}
+        <AnimatePresence>
+          {mobileMenuOpen && (
+            <motion.div
+              initial={{ opacity: 0, height: 0 }}
+              animate={{ opacity: 1, height: 'auto' }}
+              exit={{ opacity: 0, height: 0 }}
+              transition={{ duration: 0.25, ease: 'easeInOut' }}
+              className="md:hidden border-t border-slate-200/60 dark:border-slate-800/80 bg-white/95 dark:bg-slate-950/95 backdrop-blur-2xl overflow-hidden px-4 pt-4 pb-6 space-y-3"
+            >
+              <Link
+                href="/register"
+                onClick={() => setMobileMenuOpen(false)}
+                className="block text-center font-bold text-emerald-600 dark:text-emerald-400 bg-emerald-50 dark:bg-emerald-950/40 py-3 rounded-2xl text-sm"
+              >
+                Register Organisation
+              </Link>
+              <Link
+                href="/login"
+                onClick={() => setMobileMenuOpen(false)}
+                className="block text-center font-bold text-slate-700 dark:text-slate-200 bg-slate-100 dark:bg-slate-900 py-3 rounded-2xl text-sm"
+              >
+                Admin Sign In
+              </Link>
+              <Link
+                href="/vote/login"
+                onClick={() => setMobileMenuOpen(false)}
+                className="block text-center font-extrabold text-white bg-gradient-to-r from-indigo-600 via-indigo-700 to-purple-600 py-3 rounded-2xl text-sm shadow-md shadow-indigo-500/20"
+              >
+                Voter Sign In
+              </Link>
+            </motion.div>
+          )}
+        </AnimatePresence>
       </nav>
 
       {/* Hero Section */}
-      <section className="relative pt-36 pb-20 px-4">
+      <section className="relative pt-28 sm:pt-36 pb-16 sm:pb-20 px-4">
         <div className="max-w-7xl mx-auto">
           <div className="grid lg:grid-cols-2 gap-12 lg:gap-16 items-center">
             <div>
@@ -235,7 +284,7 @@ export default function LandingPage() {
                 <motion.div whileHover={{ scale: 1.03 }} whileTap={{ scale: 0.97 }}>
                   <Link
                     href="/register"
-                    className="inline-flex items-center justify-center gap-2 bg-emerald-600 hover:bg-emerald-500 text-white text-base font-extrabold px-8 py-4 rounded-2xl shadow-xl shadow-emerald-500/25 transition group"
+                    className="inline-flex items-center justify-center gap-2 bg-emerald-600 hover:bg-emerald-500 text-white text-base font-extrabold px-8 py-4 rounded-2xl shadow-xl shadow-emerald-500/25 transition group w-full sm:w-auto"
                   >
                     Register Organisation
                     <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
@@ -244,7 +293,7 @@ export default function LandingPage() {
                 <motion.div whileHover={{ scale: 1.03 }} whileTap={{ scale: 0.97 }}>
                   <Link
                     href="/login"
-                    className="inline-flex items-center justify-center gap-2 bg-white dark:bg-slate-900 hover:bg-slate-50 dark:hover:bg-slate-800 text-slate-800 dark:text-slate-100 text-base font-bold px-8 py-4 rounded-2xl border border-slate-200 dark:border-slate-800 shadow-sm hover:border-indigo-300 transition group"
+                    className="inline-flex items-center justify-center gap-2 bg-white dark:bg-slate-900 hover:bg-slate-50 dark:hover:bg-slate-800 text-slate-800 dark:text-slate-100 text-base font-bold px-8 py-4 rounded-2xl border border-slate-200 dark:border-slate-800 shadow-sm hover:border-indigo-300 transition group w-full sm:w-auto"
                   >
                     Admin Portal
                     <ChevronRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
@@ -277,7 +326,7 @@ export default function LandingPage() {
               initial={isMobile ? false : { opacity: 0, x: 30 }}
               animate={{ opacity: 1, x: 0 }}
               transition={{ duration: 0.75, delay: 0.2 }}
-              className="hidden lg:flex justify-center"
+              className="flex justify-center"
             >
               <VoteMockup />
             </motion.div>
@@ -543,7 +592,7 @@ export default function LandingPage() {
               <motion.div whileHover={{ scale: 1.03 }} whileTap={{ scale: 0.97 }}>
                 <Link
                   href="/register"
-                  className="inline-flex items-center justify-center gap-2 bg-gradient-to-r from-emerald-600 to-teal-600 hover:from-emerald-500 hover:to-teal-500 text-white text-base font-extrabold px-8 py-4 rounded-2xl shadow-xl shadow-emerald-500/25 transition group"
+                  className="inline-flex items-center justify-center gap-2 bg-gradient-to-r from-emerald-600 to-teal-600 hover:from-emerald-500 hover:to-teal-500 text-white text-base font-extrabold px-8 py-4 rounded-2xl shadow-xl shadow-emerald-500/25 transition group w-full sm:w-auto"
                 >
                   Register Your Organisation
                   <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
@@ -552,7 +601,7 @@ export default function LandingPage() {
               <motion.div whileHover={{ scale: 1.03 }} whileTap={{ scale: 0.97 }}>
                 <Link
                   href="/login"
-                  className="inline-flex items-center justify-center gap-2 bg-white dark:bg-slate-900 hover:bg-slate-50 dark:hover:bg-slate-800 text-slate-800 dark:text-slate-100 text-base font-bold px-8 py-4 rounded-2xl border border-slate-200 dark:border-slate-800 shadow-sm hover:border-emerald-300 transition group"
+                  className="inline-flex items-center justify-center gap-2 bg-white dark:bg-slate-900 hover:bg-slate-50 dark:hover:bg-slate-800 text-slate-800 dark:text-slate-100 text-base font-bold px-8 py-4 rounded-2xl border border-slate-200 dark:border-slate-800 shadow-sm hover:border-emerald-300 transition group w-full sm:w-auto"
                 >
                   Admin Login
                   <ChevronRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
@@ -697,7 +746,7 @@ export default function LandingPage() {
           </div>
 
           <div className="border-t border-slate-900 pt-8 text-center text-xs text-slate-600 dark:text-slate-500 font-medium">
-            &copy; {new Date().getFullYear()} AfriVote. Built securely with optimal encryption pipelines.
+            &copy; {new Date().getFullYear()} BfriVote. Built securely with optimal encryption pipelines.
           </div>
         </div>
       </footer>
