@@ -746,7 +746,7 @@ export default function LandingPage() {
           </div>
 
           <div className="border-t border-slate-900 pt-8 text-center text-xs text-slate-600 dark:text-slate-500 font-medium">
-            &copy; {new Date().getFullYear()} BfriVote. Built securely with optimal encryption pipelines.
+            &copy; {new Date().getFullYear()} AfriVote. Built securely with optimal encryption pipelines.
           </div>
         </div>
       </footer>
