@@ -7,6 +7,7 @@ import { BarChart3, Loader2, TrendingUp, Calendar, AlertCircle, ArrowRight } fro
 import StatusBadge from '@/components/StatusBadge';
 import Skeleton from '@/components/Skeleton';   // <-- new import
 import { Election } from '@/types';
+export const dynamic = 'force-dynamic'; // <-- ADD THIS
 
 export default function ResultsListPage() {
   const router = useRouter();

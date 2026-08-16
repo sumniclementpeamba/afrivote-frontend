@@ -6,6 +6,7 @@ import toast from 'react-hot-toast';
 import { Plus, X, Trash2, Loader2, Briefcase, Users, CheckCircle2, XCircle } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Position, Election } from '@/types';
+export const dynamic = 'force-dynamic'; // <-- ADD THIS
 
 // Motion variants
 const containerVariants = {

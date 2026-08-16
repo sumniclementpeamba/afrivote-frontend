@@ -10,6 +10,7 @@ import StatusBadge from '@/components/StatusBadge';
 import { Election } from '@/types';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link'; 
+export const dynamic = 'force-dynamic'; // <-- ADD THIS
 
 // Staggered motion variants for layout entrances
 const containerVariants = {

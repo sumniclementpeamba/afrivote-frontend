@@ -3,6 +3,7 @@ import { useQuery } from '@tanstack/react-query';
 import api from '@/lib/api';
 import { motion } from 'framer-motion';
 import { FileText, Loader2, Clock, User, Layers, ShieldAlert, Radio } from 'lucide-react';
+export const dynamic = 'force-dynamic'; // <-- ADD THIS
 
 // Motion variants
 const containerVariants = {

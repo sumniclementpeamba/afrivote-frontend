@@ -9,6 +9,7 @@ import { motion, AnimatePresence } from 'framer-motion';
 import StatusBadge from '@/components/StatusBadge';
 import Skeleton from '@/components/Skeleton';
 import { Candidate, Position } from '@/types';
+export const dynamic = 'force-dynamic'; // <-- ADD THIS
 
 const getMediaUrl = (path: string | null | undefined): string => {
   if (!path) return '/placeholder.png';

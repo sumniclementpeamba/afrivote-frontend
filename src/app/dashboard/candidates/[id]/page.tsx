@@ -9,6 +9,7 @@ import {
 import { motion } from 'framer-motion';
 import StatusBadge from '@/components/StatusBadge';
 import Skeleton from '@/components/Skeleton';
+export const dynamic = 'force-dynamic'; // <-- ADD THIS
 
 const getMediaUrl = (path: string | null | undefined): string => {
   if (!path) return '/placeholder.png';
@@ -37,7 +38,7 @@ const itemVariants = {
     transition: { type: 'spring', stiffness: 260, damping: 20 }
   },
 };
-
+  
 export default function CandidateDetailPage() {
   const { id } = useParams<{ id: string }>();
   const router = useRouter();

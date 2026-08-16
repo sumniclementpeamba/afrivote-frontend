@@ -8,6 +8,7 @@ import toast from 'react-hot-toast';
 import { Plus, X, Building2, Loader2, ShieldAlert, KeyRound, CheckCircle2, CheckCircle, XCircle, CreditCard } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import StatusBadge from '@/components/StatusBadge';
+export const dynamic = 'force-dynamic'; // <-- ADD THIS
 
 const containerVariants = {
   hidden: { opacity: 0 },

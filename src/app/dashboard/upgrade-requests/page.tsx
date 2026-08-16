@@ -5,6 +5,7 @@ import { useAuth } from '@/app/providers';
 import { motion } from 'framer-motion';
 import { CheckCircle, XCircle, Loader2, Clock, ShieldAlert, ArrowUpRight, Building2 } from 'lucide-react';
 import toast from 'react-hot-toast';
+export const dynamic = 'force-dynamic'; // <-- ADD THIS
 
 const containerVariants = {
   hidden: { opacity: 0, y: 10 },

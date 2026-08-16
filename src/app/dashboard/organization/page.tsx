@@ -27,6 +27,7 @@ import {
   Sparkles,
   ShieldAlert,
 } from 'lucide-react';
+export const dynamic = 'force-dynamic'; // <-- ADD THIS
 
 // Stagger variants for smooth page entrance
 const containerVariants = {

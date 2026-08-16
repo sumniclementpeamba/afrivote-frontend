@@ -33,6 +33,7 @@ import {
 import { useAuth } from '@/app/providers';
 import { useState } from 'react';
 import Skeleton from '@/components/Skeleton';
+export const dynamic = 'force-dynamic'; // <-- ADD THIS
 
 const getMediaUrl = (path: string | null | undefined): string => {
   if (!path) return '/placeholder.png';

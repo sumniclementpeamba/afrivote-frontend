@@ -11,6 +11,7 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { useAuth } from '@/app/providers';
 import { Voter } from '@/types';
 import Skeleton from '@/components/Skeleton';   // <-- new import
+export const dynamic = 'force-dynamic'; // <-- ADD THIS
 
 // Motion variants
 const containerVariants = {

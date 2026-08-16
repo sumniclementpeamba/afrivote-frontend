@@ -4,6 +4,7 @@ import { useAuth } from '@/app/providers';
 import { useRouter } from 'next/navigation';
 import { motion } from 'framer-motion';
 import { ArrowRight, CalendarClock, ShieldCheck } from 'lucide-react';
+export const dynamic = 'force-dynamic'; // <-- ADD THIS
 
 export default function RenewalPage() {
   const { renewSubscription, subscriptionEndsAt, logout } = useAuth();

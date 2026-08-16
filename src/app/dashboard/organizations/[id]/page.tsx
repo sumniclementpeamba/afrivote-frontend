@@ -24,6 +24,7 @@ import {
   Activity,
   ShieldAlert,
 } from 'lucide-react';
+export const dynamic = 'force-dynamic'; // <-- ADD THIS
 
 export default function OrganizationDetailPage() {
   const { id } = useParams<{ id: string }>();

@@ -11,6 +11,7 @@ import {
 import { motion, AnimatePresence } from 'framer-motion';
 import StatusBadge from '@/components/StatusBadge';
 import ReorderCandidatesModal from '@/components/ReorderCandidatesModal';
+export const dynamic = 'force-dynamic'; // <-- ADD THIS
 
 const getMediaUrl = (path: string | null | undefined): string => {
   if (!path) return '';
