@@ -53,40 +53,6 @@
   --color-text-val: 15 23 42;
 }
 
-@media (max-width: 768px) {
-  /* Force every element to be visible */
-  * {
-    opacity: 1 !important;
-    transform: none !important;
-    animation: none !important;
-  }
-
-  /* Ensure gradient text (like logo and stats) uses solid color */
-  .bg-clip-text.text-transparent {
-    -webkit-text-fill-color: #4f46e5 !important; /* Indigo-600 */
-    color: #4f46e5 !important;
-    background: none !important;
-  }
-
-  /* Dark mode overrides for gradient text */
-  .dark .bg-clip-text.text-transparent {
-    -webkit-text-fill-color: #e0e7ff !important; /* Indigo-100 */
-    color: #e0e7ff !important;
-    background: none !important;
-  }
-
-  /* Force any element with inline opacity/transform from Framer Motion to be visible */
-  [style*="opacity: 0"] {
-    opacity: 1 !important;
-  }
-  [style*="transform: translateY"] {
-    transform: none !important;
-  }
-  [style*="transform: scale"] {
-    transform: none !important;
-  }
-}
-
 /* 3. Inject colors & keyframe animations directly into Tailwind v4 theme engine */
 @theme {
   --color-background: var(--background);
@@ -163,14 +129,55 @@ body {
   transition: background-color 0.3s ease, color 0.3s ease;
 }
 
-/* ─── Mobile Visibility Fix ───────────────────────────────────────────
-   Forces all elements to be visible on small screens.
-   This overrides any inline opacity/transform set by Framer Motion.
-   Remove after animations are properly fixed if desired.
-────────────────────────────────────────────────────────────────────── */
+/* ═══════════════════════════════════════════════════════════════════════════
+   MOBILE VISIBILITY OVERRIDE – FORCES ALL CONTENT VISIBLE ON SMALL SCREENS
+   This must be placed last to override any other rules (especially Framer Motion
+   inline styles and Tailwind gradient text).
+   ═══════════════════════════════════════════════════════════════════════════ */
 @media (max-width: 768px) {
+  /* Force every element to be fully opaque and static */
   * {
     opacity: 1 !important;
     transform: none !important;
+    animation: none !important;
+  }
+
+  /* Kill any inline opacity / transform set by Framer Motion */
+  [style*="opacity: 0"] {
+    opacity: 1 !important;
+  }
+  [style*="transform:"] {
+    transform: none !important;
+  }
+
+  /* Make all gradient text solid and visible (light mode) */
+  .text-transparent,
+  .bg-clip-text.text-transparent,
+  [class*="bg-gradient-to-"].text-transparent {
+    color: #4f46e5 !important;                 /* Indigo-600 */
+    -webkit-text-fill-color: #4f46e5 !important;
+    background: none !important;
+    background-clip: border-box !important;
+    -webkit-background-clip: border-box !important;
+  }
+
+  /* Dark mode overrides for gradient text */
+  .dark .text-transparent,
+  .dark .bg-clip-text.text-transparent,
+  .dark [class*="bg-gradient-to-"].text-transparent {
+    color: #e0e7ff !important;                 /* Indigo-100 */
+    -webkit-text-fill-color: #e0e7ff !important;
+    background: none !important;
+    background-clip: border-box !important;
+    -webkit-background-clip: border-box !important;
+  }
+
+  /* Ensure any element with animated gradient background stays visible */
+  .bg-gradient-to-r,
+  .bg-gradient-to-tr,
+  .bg-gradient-to-br,
+  .bg-gradient-to-tl,
+  .bg-gradient-to-bl {
+    /* Do not modify – these are fine; only text gradient was broken */
   }
 }
