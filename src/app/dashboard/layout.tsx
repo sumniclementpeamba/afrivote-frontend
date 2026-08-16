@@ -22,6 +22,7 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
   const [userRole, setUserRole] = useState<string | null>(null);
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const [orgLogo, setOrgLogo] = useState<string | null>(null);
+  const [debug, setDebug] = useState(''); // <-- DEBUG STATE
 
   const { resolvedTheme, setTheme } = useTheme();
   const [mounted, setMounted] = useState(false);
@@ -38,6 +39,8 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
   useEffect(() => {
     const t = localStorage.getItem('token');
     const role = localStorage.getItem('userRole');
+    const expiry = localStorage.getItem('subscriptionEndsAt');
+    setDebug(`Token: ${t ? 'YES' : 'NO'}, Role: ${role || 'none'}, Expiry: ${expiry || 'none'}`);
 
     if (!t) {
       router.push('/login');
@@ -81,6 +84,12 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
         <div className="text-center">
           <div className="w-8 h-8 border-2 border-indigo-600 border-t-transparent rounded-full animate-spin mx-auto mb-4"></div>
           <p className="text-slate-600 dark:text-slate-400 text-sm">Checking authentication...</p>
+          {/* Debug panel even when no token */}
+          {debug && (
+            <div className="fixed top-2 left-2 right-2 z-[999] bg-red-500/90 text-white text-xs p-3 rounded-xl shadow-lg overflow-auto max-h-40">
+              {debug}
+            </div>
+          )}
         </div>
       </div>
     );
@@ -107,6 +116,13 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
       suppressHydrationWarning
       className="min-h-screen bg-slate-50 dark:bg-slate-950 text-slate-900 dark:text-slate-100 flex relative antialiased selection:bg-indigo-500 selection:text-white"
     >
+      {/* DEBUG PANEL – visible on screen for mobile debugging */}
+      {debug && (
+        <div className="fixed top-2 left-2 right-2 z-[999] bg-blue-500/90 text-white text-xs p-3 rounded-xl shadow-lg overflow-auto max-h-40">
+          {debug}
+        </div>
+      )}
+
       {/* Mobile Backdrop */}
       <AnimatePresence>
         {sidebarOpen && (
