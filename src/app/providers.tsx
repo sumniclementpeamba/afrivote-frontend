@@ -9,6 +9,7 @@ interface User {
   role: string;
   organization: string | null;
   firstName: string;
+  email: string;
   profilePicture: string | null;
   plan?: string;
   // subscription expiry date (ISO string)
@@ -84,6 +85,7 @@ export default function Providers({ children }: { children: React.ReactNode }) {
           role: res.data.role,
           organization: res.data.organization,
           firstName: res.data.first_name || 'User',
+          email: res.data.email || '',
           profilePicture: res.data.profile_picture || null,
           plan: res.data.organization_plan || null,
           subscriptionEndsAt: expiry,
@@ -109,6 +111,7 @@ export default function Providers({ children }: { children: React.ReactNode }) {
   const login = useCallback((newToken: string, newUser: User) => {
     localStorage.setItem('token', newToken);
     localStorage.setItem('userRole', newUser.role);
+    setUser(newUser);
 
     if (newUser.organization) {
       localStorage.setItem('userOrgId', newUser.organization);
