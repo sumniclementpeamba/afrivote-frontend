@@ -5,6 +5,9 @@ import api from '@/lib/api';
 import toast from 'react-hot-toast';
 import { Loader2, CheckCircle2, XCircle } from 'lucide-react';
 
+// Force dynamic rendering to avoid prerender error when using useSearchParams
+export const dynamic = 'force-dynamic';
+
 export default function RegistrationSuccessPage() {
   const router = useRouter();
   const searchParams = useSearchParams();
