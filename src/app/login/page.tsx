@@ -100,21 +100,25 @@ export default function AdminLoginPage() {
   const [password, setPassword] = useState('');
   const [showPw, setShowPw] = useState(false);
   const [loading, setLoading] = useState(false);
+  const [debug, setDebug] = useState('');           // <-- DEBUG STATE
   const router = useRouter();
   const { login } = useAuth();
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setLoading(true);
+    setDebug('Submitting...');
     try {
       // 1. Get JWT token
       const res = await api.post('/api/auth/login/', { email, password });
       const token = res.data.access;
+      setDebug(`Token received: ${token ? 'YES' : 'NO'}`);
 
       // 2. Fetch user profile
       const profile = await api.get('/api/auth/me/', {
         headers: { Authorization: `Bearer ${token}` },
       });
+      setDebug(`Profile fetched: role=${profile.data.role}`);
 
       const user = {
         role: profile.data.role,
@@ -130,6 +134,7 @@ export default function AdminLoginPage() {
         localStorage.removeItem('userRole');
         localStorage.removeItem('userOrgId');
         toast.error('❌ Voters must use the Voter Portal. Redirecting...');
+        setDebug('Blocked: VOTER');
         setLoading(false);
         setTimeout(() => {
           window.location.href = '/vote/login';
@@ -143,6 +148,7 @@ export default function AdminLoginPage() {
         localStorage.removeItem('userRole');
         localStorage.removeItem('userOrgId');
         toast.error('❌ Unauthorized. Admin access only.');
+        setDebug('Blocked: Not admin');
         setLoading(false);
         return;
       }
@@ -155,6 +161,7 @@ export default function AdminLoginPage() {
           localStorage.removeItem('userRole');
           localStorage.removeItem('userOrgId');
           toast.error('⏳ Your organisation is pending approval. Please wait for the super admin to approve you.');
+          setDebug('Blocked: Pending approval');
           setLoading(false);
           window.location.href = '/pending-approval';
           return;
@@ -171,6 +178,7 @@ export default function AdminLoginPage() {
       localStorage.setItem('token', token);
       localStorage.setItem('userRole', user.role);
 
+      setDebug(`Token set: ${localStorage.getItem('token') ? 'YES' : 'NO'}, Role: ${user.role}`);
       toast.success('Welcome back!');
 
       // Slight delay to allow React state updates before full reload
@@ -178,6 +186,7 @@ export default function AdminLoginPage() {
         window.location.href = '/dashboard';
       }, 100);
     } catch (err: any) {
+      setDebug(`Error: ${JSON.stringify(err.response?.data || err.message || err)}`);
       if (err.response?.data?.detail) {
         toast.error(err.response.data.detail);
       } else if (err.response?.status === 401) {
@@ -192,6 +201,13 @@ export default function AdminLoginPage() {
 
   return (
     <div className="relative min-h-screen flex flex-col items-center justify-center overflow-hidden bg-[#060b1c] px-4 py-8 sm:p-4 selection:bg-indigo-500 selection:text-white">
+
+      {/* DEBUG PANEL – visible on screen for mobile debugging */}
+      {debug && (
+        <div className="fixed top-2 left-2 right-2 z-[999] bg-red-500/90 text-white text-xs p-3 rounded-xl shadow-lg overflow-auto max-h-40">
+          {debug}
+        </div>
+      )}
 
       {/* Background */}
       <DotGrid />
