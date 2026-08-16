@@ -1,7 +1,7 @@
 'use client';
 
 import { useEffect, useState } from 'react';
-import { useRouter, usePathname, useSearchParams } from 'next/navigation';
+import { useRouter, usePathname } from 'next/navigation';
 import { useAuth } from '@/app/providers';
 import { useTheme } from 'next-themes';
 import Link from 'next/link';
@@ -12,12 +12,12 @@ import {
 } from 'lucide-react';
 import PlanBadge from '@/components/PlanBadge';
 import { isSubscriptionExpired } from '@/utils/subscription';
-export const dynamic = 'force-dynamic'; 
+
+export const dynamic = 'force-dynamic';
 
 export default function DashboardLayout({ children }: { children: React.ReactNode }) {
   const router = useRouter();
   const pathname = usePathname();
-  const searchParams = useSearchParams();
   const { user, logout, plan, subscriptionEndsAt } = useAuth();
   const [token, setToken] = useState<string | null>(null);
   const [userRole, setUserRole] = useState<string | null>(null);
@@ -36,8 +36,9 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
 
   useEffect(() => {
     // If token is passed via URL (for private browsing support), save it to localStorage
-    const urlToken = searchParams.get('token');
-    const urlRole = searchParams.get('role');
+    const params = new URLSearchParams(window.location.search);
+    const urlToken = params.get('token');
+    const urlRole = params.get('role');
 
     if (urlToken) {
       localStorage.setItem('token', urlToken);
@@ -63,7 +64,7 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
     setToken(t);
     setUserRole(role);
     setOrgLogo(localStorage.getItem('orgLogo'));
-  }, [router, searchParams]);
+  }, [router]);
 
   useEffect(() => {
     if (token && subscriptionExpired && !isRenewalPage) {
