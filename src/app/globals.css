@@ -129,7 +129,7 @@ body {
   transition: background-color 0.3s ease, color 0.3s ease;
 }
 
-/* ─── Mobile Visibility Fix (Force solid backgrounds for gradients) ─────────── */
+/* ─── Mobile Visibility Fix (Targeted) ─────────────────────────────────────── */
 @media (max-width: 768px) {
   /* Force every element to be visible */
   * {
@@ -152,7 +152,7 @@ body {
   .bg-clip-text,
   [class*="text-transparent"],
   [class*="bg-clip-text"],
-  [class*="bg-gradient-to-"] {
+  [class*="bg-gradient-to-"].text-transparent {
     color: #4f46e5 !important;                 /* Indigo-600 */
     -webkit-text-fill-color: #4f46e5 !important;
     background: none !important;
@@ -160,25 +160,12 @@ body {
     -webkit-background-clip: border-box !important;
   }
 
-  /* Force all gradient backgrounds to solid indigo so white icons are visible */
-  .bg-gradient-to-r,
-  .bg-gradient-to-l,
-  .bg-gradient-to-t,
-  .bg-gradient-to-b,
-  .bg-gradient-to-tr,
-  .bg-gradient-to-tl,
-  .bg-gradient-to-br,
-  .bg-gradient-to-bl {
-    background-image: none !important;
-    background-color: #4f46e5 !important;      /* Indigo-600 */
-  }
-
-  /* Dark mode overrides */
+  /* Dark mode overrides for gradient text */
   .dark .text-transparent,
   .dark .bg-clip-text,
   .dark [class*="text-transparent"],
   .dark [class*="bg-clip-text"],
-  .dark [class*="bg-gradient-to-"] {
+  .dark [class*="bg-gradient-to-"].text-transparent {
     color: #e0e7ff !important;                 /* Indigo-100 */
     -webkit-text-fill-color: #e0e7ff !important;
     background: none !important;
@@ -186,14 +173,13 @@ body {
     -webkit-background-clip: border-box !important;
   }
 
-  .dark .bg-gradient-to-r,
-  .dark .bg-gradient-to-l,
-  .dark .bg-gradient-to-t,
-  .dark .bg-gradient-to-b,
-  .dark .bg-gradient-to-tr,
-  .dark .bg-gradient-to-tl,
-  .dark .bg-gradient-to-br,
-  .dark .bg-gradient-to-bl {
+  /* Utility class: apply to icon containers that need a solid background */
+  .mobile-solid-bg {
+    background-image: none !important;
+    background-color: #4f46e5 !important;      /* Indigo-600 */
+  }
+
+  .dark .mobile-solid-bg {
     background-image: none !important;
     background-color: #312e81 !important;      /* Indigo-900 */
   }
