@@ -611,7 +611,7 @@ export default function LandingPage() {
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-8 max-w-3xl mx-auto">
             {[
               { name: 'Clement Peamba Sumni', role: 'Backend Developer & API Engineer', avatar: '/images/umat.png' },
-              { name: 'Evans Caleb Larbi', role: 'Frontend Engineer', avatar: '/images/evans.jpg' },
+              { name: 'Caleb Evans Larbi', role: 'Frontend Engineer', avatar: '/images/evans.jpg' },
             ].map((member, idx) => (
               <motion.div
                 key={idx}
