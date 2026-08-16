@@ -1,6 +1,6 @@
 'use client';
-import { motion, useInView, AnimatePresence, Variants } from 'framer-motion';
-import { useRef, useState, useEffect } from 'react';
+import { motion, AnimatePresence, Variants } from 'framer-motion';
+import { useState, useEffect } from 'react';
 import Link from 'next/link';
 import {
   ArrowRight, Shield, Users, BarChart3, Zap, Star, CreditCard,
@@ -10,11 +10,8 @@ import {
 // ─── Animated Number ──────────────────────────────────────────────────────────
 const AnimatedNumber = ({ value, suffix = '+' }: { value: number; suffix?: string }) => {
   const [display, setDisplay] = useState(0);
-  const ref = useRef(null);
-  const inView = useInView(ref, { once: true, margin: '-80px' });
 
   useEffect(() => {
-    if (!inView) return;
     const duration = 1500;
     const fps = 60;
     const totalFrames = Math.round((duration / 1000) * fps);
@@ -26,9 +23,9 @@ const AnimatedNumber = ({ value, suffix = '+' }: { value: number; suffix?: strin
       if (frame >= totalFrames) { setDisplay(value); clearInterval(id); }
     }, 1000 / fps);
     return () => clearInterval(id);
-  }, [value, inView]);
+  }, [value]);
 
-  return <span ref={ref}>{display.toLocaleString()}{suffix}</span>;
+  return <span>{display.toLocaleString()}{suffix}</span>;
 };
 
 // ─── Animation Variants ───────────────────────────────────────────────────────
@@ -279,8 +276,7 @@ export default function LandingPage() {
           <motion.div
             variants={stagger}
             initial="hidden"
-            whileInView="visible"
-            viewport={{ once: true }}
+            animate="visible"
             className="grid grid-cols-2 md:grid-cols-4 gap-8 text-center"
           >
             {[
@@ -306,16 +302,14 @@ export default function LandingPage() {
           <div className="text-center mb-20">
             <motion.span
               initial={{ opacity: 0 }}
-              whileInView={{ opacity: 1 }}
-              viewport={{ once: true }}
+              animate={{ opacity: 1 }}
               className="text-indigo-600 dark:text-indigo-400 font-extrabold text-xs tracking-[0.2em] uppercase"
             >
               Simple Process
             </motion.span>
             <motion.h2
               initial={{ opacity: 0, y: 20 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              viewport={{ once: true }}
+              animate={{ opacity: 1, y: 0 }}
               className="text-3xl sm:text-5xl font-black text-slate-900 dark:text-white tracking-tight mt-2 mb-4"
             >
               How AfriVote Works
@@ -329,8 +323,7 @@ export default function LandingPage() {
           <motion.div
             variants={stagger}
             initial="hidden"
-            whileInView="visible"
-            viewport={{ once: true, margin: '-80px' }}
+            animate="visible"
             className="grid grid-cols-1 md:grid-cols-3 gap-8 relative"
           >
             <div className="hidden md:block absolute top-[3.5rem] left-[20%] right-[20%] h-px border-t-2 border-dashed border-indigo-200 dark:border-indigo-900 z-0" />
@@ -371,16 +364,14 @@ export default function LandingPage() {
           <div className="text-center mb-14">
             <motion.span
               initial={{ opacity: 0 }}
-              whileInView={{ opacity: 1 }}
-              viewport={{ once: true }}
+              animate={{ opacity: 1 }}
               className="text-indigo-600 dark:text-indigo-400 font-extrabold text-xs tracking-[0.2em] uppercase"
             >
               Platform Capabilities
             </motion.span>
             <motion.h2
               initial={{ opacity: 0, y: 20 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              viewport={{ once: true }}
+              animate={{ opacity: 1, y: 0 }}
               className="text-3xl sm:text-5xl font-black text-slate-900 dark:text-white tracking-tight mt-2 mb-4"
             >
               Everything You Need
@@ -446,16 +437,14 @@ export default function LandingPage() {
           <div className="text-center mb-16">
             <motion.span
               initial={{ opacity: 0 }}
-              whileInView={{ opacity: 1 }}
-              viewport={{ once: true }}
+              animate={{ opacity: 1 }}
               className="text-indigo-600 dark:text-indigo-400 font-extrabold text-xs tracking-[0.2em] uppercase"
             >
               For Administrators
             </motion.span>
             <motion.h2
               initial={{ opacity: 0, y: 20 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              viewport={{ once: true }}
+              animate={{ opacity: 1, y: 0 }}
               className="text-3xl sm:text-5xl font-black text-slate-900 dark:text-white tracking-tight mt-2 mb-4"
             >
               Admin Operations Lifecycle
@@ -468,8 +457,7 @@ export default function LandingPage() {
           <motion.div
             variants={stagger}
             initial="hidden"
-            whileInView="visible"
-            viewport={{ once: true, margin: '-80px' }}
+            animate="visible"
             className="grid grid-cols-1 md:grid-cols-2 gap-6 lg:gap-8"
           >
             {[
@@ -504,8 +492,7 @@ export default function LandingPage() {
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <motion.div
             initial={{ opacity: 0, y: 30 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true }}
+            animate={{ opacity: 1, y: 0 }}
             className="max-w-3xl mx-auto text-center"
           >
             <div className="p-5 bg-emerald-50 dark:bg-emerald-950/40 text-emerald-600 dark:text-emerald-400 rounded-3xl inline-flex mx-auto mb-6">
@@ -546,15 +533,13 @@ export default function LandingPage() {
         <div className="max-w-5xl mx-auto">
           <motion.div
             initial={{ opacity: 0, scale: 0.96 }}
-            whileInView={{ opacity: 1, scale: 1 }}
-            viewport={{ once: true }}
+            animate={{ opacity: 1, scale: 1 }}
             className="relative bg-gradient-to-tr from-indigo-950 via-indigo-900 to-purple-950 rounded-[2.5rem] shadow-2xl text-center py-16 px-6 sm:px-14 overflow-hidden border border-indigo-800/40"
           >
             <div className="absolute inset-0 bg-[radial-gradient(circle_at_top_right,rgba(255,255,255,0.1),transparent)] pointer-events-none" />
             <motion.h2
               initial={{ opacity: 0, y: 12 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              viewport={{ once: true }}
+              animate={{ opacity: 1, y: 0 }}
               className="text-3xl sm:text-5xl font-black text-white mb-5 relative z-10 tracking-tight"
             >
               Ready to Upgrade Scale?
@@ -579,16 +564,14 @@ export default function LandingPage() {
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
           <motion.span
             initial={{ opacity: 0 }}
-            whileInView={{ opacity: 1 }}
-            viewport={{ once: true }}
+            animate={{ opacity: 1 }}
             className="text-indigo-600 dark:text-indigo-400 font-extrabold text-xs tracking-[0.2em] uppercase"
           >
             The Builders
           </motion.span>
           <motion.h2
             initial={{ opacity: 0, y: 20 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true }}
+            animate={{ opacity: 1, y: 0 }}
             className="text-3xl sm:text-5xl font-black text-slate-900 dark:text-white tracking-tight mt-2 mb-3"
           >
             Meet Our Engineering Team
@@ -606,8 +589,7 @@ export default function LandingPage() {
               <motion.div
                 key={idx}
                 initial={{ opacity: 0, y: 30 }}
-                whileInView={{ opacity: 1, y: 0 }}
-                viewport={{ once: true }}
+                animate={{ opacity: 1, y: 0 }}
                 transition={{ delay: idx * 0.15 }}
                 whileHover={{ y: -6 }}
                 className="bg-slate-50 dark:bg-slate-900 rounded-3xl p-8 border border-slate-200/80 dark:border-slate-800 shadow-sm hover:shadow-xl transition-all duration-300 group text-center"
