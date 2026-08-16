@@ -430,37 +430,33 @@ export default function LandingPage() {
             ))}
           </div>
 
-          <AnimatePresence mode="wait">
-            <motion.div
-              key={activeTab}
-              initial={{ opacity: 0, y: 15 }}
-              animate={{ opacity: 1, y: 0 }}
-              exit={{ opacity: 0, y: -15 }}
-              transition={{ duration: 0.25 }}
-              className="grid md:grid-cols-2 gap-12 items-center"
-            >
-              <div>
-                <h3 className="text-3xl font-black text-slate-900 dark:text-white mb-4 leading-tight">{feature.heading}</h3>
-                <p className="text-slate-600 dark:text-slate-300 text-base leading-relaxed mb-8">{feature.desc}</p>
-                <ul className="space-y-3.5">
-                  {feature.points.map((pt) => (
-                    <li key={pt} className="flex items-center gap-3 text-slate-700 dark:text-slate-200">
-                      <div className={`w-5 h-5 rounded-full bg-gradient-to-br ${feature.from} ${feature.to} flex items-center justify-center shrink-0 shadow-sm`}>
-                        <Check className="w-3 h-3 text-white stroke-[3]" />
-                      </div>
-                      <span className="font-semibold text-sm">{pt}</span>
-                    </li>
-                  ))}
-                </ul>
-              </div>
+          {/* Static Feature Detail (always visible) */}
+          <div className="grid md:grid-cols-2 gap-12 items-center">
+            <div>
+              <h3 className="text-3xl font-black text-slate-900 dark:text-white mb-4 leading-tight">
+                {feature.heading}
+              </h3>
+              <p className="text-slate-600 dark:text-slate-300 text-base leading-relaxed mb-8">
+                {feature.desc}
+              </p>
+              <ul className="space-y-3.5">
+                {feature.points.map((pt) => (
+                  <li key={pt} className="flex items-center gap-3 text-slate-700 dark:text-slate-200">
+                    <div className={`w-5 h-5 rounded-full bg-gradient-to-br ${feature.from} ${feature.to} flex items-center justify-center shrink-0 shadow-sm`}>
+                      <Check className="w-3 h-3 text-white stroke-[3]" />
+                    </div>
+                    <span className="font-semibold text-sm">{pt}</span>
+                  </li>
+                ))}
+              </ul>
+            </div>
 
-              <div className={`relative h-72 rounded-3xl bg-gradient-to-br ${feature.from} ${feature.to} flex items-center justify-center shadow-2xl overflow-hidden`}>
-                <div className="absolute inset-0 bg-[radial-gradient(circle_at_top_right,rgba(255,255,255,0.2),transparent)]" />
-                <div className="w-40 h-40 rounded-full border-2 border-white/20 animate-ping absolute" />
-                <feature.Icon className="w-24 h-24 text-white/40 relative z-10" />
-              </div>
-            </motion.div>
-          </AnimatePresence>
+            <div className={`relative h-72 rounded-3xl bg-gradient-to-br ${feature.from} ${feature.to} flex items-center justify-center shadow-2xl overflow-hidden`}>
+              <div className="absolute inset-0 bg-[radial-gradient(circle_at_top_right,rgba(255,255,255,0.2),transparent)]" />
+              <div className="w-40 h-40 rounded-full border-2 border-white/20 animate-ping absolute" />
+              <feature.Icon className="w-24 h-24 text-white/40 relative z-10" />
+            </div>
+          </div>
         </div>
       </section>
 
