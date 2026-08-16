@@ -53,6 +53,40 @@
   --color-text-val: 15 23 42;
 }
 
+@media (max-width: 768px) {
+  /* Force every element to be visible */
+  * {
+    opacity: 1 !important;
+    transform: none !important;
+    animation: none !important;
+  }
+
+  /* Ensure gradient text (like logo and stats) uses solid color */
+  .bg-clip-text.text-transparent {
+    -webkit-text-fill-color: #4f46e5 !important; /* Indigo-600 */
+    color: #4f46e5 !important;
+    background: none !important;
+  }
+
+  /* Dark mode overrides for gradient text */
+  .dark .bg-clip-text.text-transparent {
+    -webkit-text-fill-color: #e0e7ff !important; /* Indigo-100 */
+    color: #e0e7ff !important;
+    background: none !important;
+  }
+
+  /* Force any element with inline opacity/transform from Framer Motion to be visible */
+  [style*="opacity: 0"] {
+    opacity: 1 !important;
+  }
+  [style*="transform: translateY"] {
+    transform: none !important;
+  }
+  [style*="transform: scale"] {
+    transform: none !important;
+  }
+}
+
 /* 3. Inject colors & keyframe animations directly into Tailwind v4 theme engine */
 @theme {
   --color-background: var(--background);
