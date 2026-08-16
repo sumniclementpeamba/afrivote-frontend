@@ -5,7 +5,7 @@ export default function AboutPage() {
   return (
     <div className="min-h-screen bg-slate-50 dark:bg-slate-950 text-slate-900 dark:text-slate-100 overflow-hidden">
       {/* Hero Section */}
-      <section className="relative bg-gradient-to-br from-indigo-600 via-purple-600 to-indigo-800 py-24 px-6 text-center text-white overflow-hidden">
+      <section className="relative bg-gradient-to-br from-indigo-600 via-purple-600 to-indigo-800 py-24 px-6 text-center text-white overflow-hidden mobile-solid-bg">
         <div className="absolute inset-0 bg-[linear-gradient(to_right,#ffffff0a_1px,transparent_1px),linear-gradient(to_bottom,#ffffff0a_1px,transparent_1px)] bg-[size:24px_24px] opacity-80 animate-pulse" />
         <div className="absolute -top-24 -left-24 w-96 h-96 bg-purple-500/20 rounded-full blur-3xl animate-bounce duration-[10000ms]" />
         <div className="absolute -bottom-24 -right-24 w-96 h-96 bg-indigo-500/20 rounded-full blur-3xl animate-pulse duration-[8000ms]" />
