@@ -71,7 +71,7 @@ export default function PublicPaidElectionPage() {
   useEffect(() => {
     const interval = setInterval(() => {
       fetchElection();
-    }, 5000); // <-- update interval to 5000 ms
+    }, 5000);
 
     return () => clearInterval(interval);
   }, [electionSlug]);
@@ -207,74 +207,94 @@ export default function PublicPaidElectionPage() {
           </motion.div>
 
           {/* Positions */}
-          {election.positions.map((position: any) => (
-            <motion.section key={position.id} variants={itemVariants} className="bg-white dark:bg-slate-900 rounded-3xl p-6 sm:p-8 shadow-sm border border-slate-200 dark:border-slate-800">
-              <h2 className="text-2xl font-bold text-slate-900 dark:text-white mb-6 flex items-center gap-2">
-                <span className="h-8 w-1 bg-indigo-500 rounded-full" />
-                {position.title}
-              </h2>
+          {election.positions.map((position: any) => {
+            const maxVotes = Math.max(
+              ...position.candidates.map((c: any) => c.vote_count),
+              0
+            );
 
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                {position.candidates.map((candidate: any) => {
-                  const isSelected = selections[position.id]?.candidateId === candidate.id;
-                  return (
-                    <motion.div
-                      key={candidate.id}
-                      variants={cardHover}
-                      initial="rest"
-                      whileHover="hover"
-                      animate={isSelected ? { scale: 1.02, boxShadow: '0 0 0 2px #6366f1, 0 24px 48px rgba(79,70,229,0.12)' } : undefined}
-                      onClick={() => handleCandidateSelect(position.id, candidate.id)}
-                      className={`p-4 rounded-2xl cursor-pointer border transition-all ${
-                        isSelected
-                          ? 'border-indigo-500 bg-indigo-50/50 dark:bg-indigo-950/30'
-                          : 'border-slate-200 dark:border-slate-700 hover:border-indigo-300'
-                      }`}
-                    >
-                      <div className="flex items-center gap-3">
-                        {candidate.photo && (
-                          <img
-                            src={getMediaUrl(candidate.photo)}
-                            alt={candidate.name}
-                            className="w-12 h-12 rounded-full object-cover border-2 border-white shadow"
-                            onError={(e) => {
-                              e.currentTarget.style.display = 'none';
-                            }}
-                          />
-                        )}
-                        <div className="flex-1">
-                          <p className="font-bold text-slate-900 dark:text-white">{candidate.name}</p>
-                          <p className="text-xs text-slate-500">{candidate.vote_count} votes</p>
+            return (
+              <motion.section key={position.id} variants={itemVariants} className="bg-white dark:bg-slate-900 rounded-3xl p-6 sm:p-8 shadow-sm border border-slate-200 dark:border-slate-800">
+                <h2 className="text-2xl font-bold text-slate-900 dark:text-white mb-6 flex items-center gap-2">
+                  <span className="h-8 w-1 bg-indigo-500 rounded-full" />
+                  {position.title}
+                </h2>
+
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                  {position.candidates.map((candidate: any) => {
+                    const isSelected = selections[position.id]?.candidateId === candidate.id;
+                    const percentage = maxVotes > 0 ? (candidate.vote_count / maxVotes) * 100 : 0;
+
+                    return (
+                      <motion.div
+                        key={candidate.id}
+                        variants={cardHover}
+                        initial="rest"
+                        whileHover="hover"
+                        animate={isSelected ? { scale: 1.02, boxShadow: '0 0 0 2px #6366f1, 0 24px 48px rgba(79,70,229,0.12)' } : undefined}
+                        onClick={() => handleCandidateSelect(position.id, candidate.id)}
+                        className={`p-4 rounded-2xl cursor-pointer border transition-all ${
+                          isSelected
+                            ? 'border-indigo-500 bg-indigo-50/50 dark:bg-indigo-950/30'
+                            : 'border-slate-200 dark:border-slate-700 hover:border-indigo-300'
+                        }`}
+                      >
+                        <div className="flex items-center gap-4">
+                          {candidate.photo && (
+                            <img
+                              src={getMediaUrl(candidate.photo)}
+                              alt={candidate.name}
+                              className="w-20 h-20 sm:w-24 sm:h-24 rounded-2xl object-cover border-2 border-white shadow-md"
+                              onError={(e) => {
+                                e.currentTarget.style.display = 'none';
+                              }}
+                            />
+                          )}
+                          <div className="flex-1 min-w-0">
+                            <p className="font-bold text-lg sm:text-xl text-slate-900 dark:text-white truncate">{candidate.name}</p>
+                            <p className="text-sm font-semibold text-indigo-600 dark:text-indigo-400 mt-1">
+                              {candidate.vote_count} votes
+                            </p>
+                            {/* Live progress bar */}
+                            <div className="mt-2 h-2 bg-slate-100 dark:bg-slate-800 rounded-full overflow-hidden">
+                              <motion.div
+                                initial={{ width: 0 }}
+                                animate={{ width: `${percentage}%` }}
+                                transition={{ duration: 0.8, ease: 'easeOut' }}
+                                className="h-full rounded-full bg-gradient-to-r from-indigo-500 to-purple-500"
+                              />
+                            </div>
+                          </div>
+                          {isSelected && (
+                            <div className="w-6 h-6 rounded-full bg-indigo-600 flex items-center justify-center shrink-0">
+                              <Check className="w-4 h-4 text-white" />
+                            </div>
+                          )}
                         </div>
+
                         {isSelected && (
-                          <div className="w-6 h-6 rounded-full bg-indigo-600 flex items-center justify-center">
-                            <Check className="w-4 h-4 text-white" />
+                          <div className="mt-4 pl-24 sm:pl-28">
+                            <label className="block text-xs font-bold uppercase tracking-wider text-slate-500 mb-1">Votes</label>
+                            <select
+                              value={selections[position.id]?.votes || 1}
+                              onChange={(e) => handleVotesChange(position.id, parseInt(e.target.value))}
+                              className="w-full px-4 py-2 rounded-lg bg-white dark:bg-slate-800 border border-slate-300 dark:border-slate-600 text-slate-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-indigo-500"
+                            >
+                              {[1, 2, 5, 10, 20, 50].map((n) => (
+                                <option key={n} value={n}>
+                                  {n} vote{n > 1 ? 's' : ''} – GH₵ {n * parseFloat(election.vote_price)}
+                                </option>
+                              ))}
+                            </select>
                           </div>
                         )}
-                      </div>
-
-                      {isSelected && (
-                        <div className="mt-4">
-                          <label className="block text-xs font-bold uppercase tracking-wider text-slate-500 mb-1">Votes</label>
-                          <select
-                            value={selections[position.id]?.votes || 1}
-                            onChange={(e) => handleVotesChange(position.id, parseInt(e.target.value))}
-                            className="w-full px-4 py-2 rounded-lg bg-white dark:bg-slate-800 border border-slate-300 dark:border-slate-600 text-slate-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-indigo-500"
-                          >
-                            {[1, 2, 5, 10, 20, 50].map((n) => (
-                              <option key={n} value={n}>
-                                {n} vote{n > 1 ? 's' : ''} – GH₵ {n * parseFloat(election.vote_price)}
-                              </option>
-                            ))}
-                          </select>
-                        </div>
-                      )}
-                    </motion.div>
-                  );
-                })}
-              </div>
-            </motion.section>
-          ))}
+                      </motion.div>
+                    );
+                  })}
+                </div>
+              </motion.section>
+            );
+          })}
 
           {/* Summary & Pay Button */}
           <motion.div variants={itemVariants} className="sticky bottom-4 z-20">
@@ -295,71 +315,7 @@ export default function PublicPaidElectionPage() {
             </div>
           </motion.div>
 
-          {/* Most Voted with Progress Bars */}
-          <motion.section variants={itemVariants} className="bg-white dark:bg-slate-900 rounded-3xl p-6 sm:p-8 shadow-sm border border-slate-200 dark:border-slate-800">
-            <h2 className="text-2xl font-bold text-slate-900 dark:text-white mb-6 flex items-center gap-2">
-              <span className="h-8 w-1 bg-purple-500 rounded-full" />
-              Most Voted
-            </h2>
-            <div className="space-y-8">
-              {election.positions.map((position: any) => {
-                const maxVotes = Math.max(
-                  ...position.candidates.map((c: any) => c.vote_count),
-                  0
-                );
-
-                return (
-                  <div key={position.id}>
-                    <h3 className="font-bold text-slate-800 dark:text-slate-200 mb-4">{position.title}</h3>
-
-                    {/* Ranked list */}
-                    <div className="space-y-2 mb-4">
-                      {position.candidates
-                        .slice()
-                        .sort((a: any, b: any) => b.vote_count - a.vote_count)
-                        .map((candidate: any, idx: number) => (
-                          <div
-                            key={candidate.id}
-                            className="flex items-center justify-between bg-slate-50 dark:bg-slate-800/50 p-3 rounded-xl border border-slate-100 dark:border-slate-700"
-                          >
-                            <span className="font-medium text-slate-800 dark:text-slate-200">
-                              {idx + 1}. {candidate.name}
-                            </span>
-                            <span className="text-sm text-slate-500">{candidate.vote_count} votes</span>
-                          </div>
-                        ))}
-                    </div>
-
-                    {/* Progress bars */}
-                    <div className="space-y-3">
-                      {position.candidates
-                        .slice()
-                        .sort((a: any, b: any) => b.vote_count - a.vote_count)
-                        .map((candidate: any) => {
-                          const percentage = maxVotes > 0 ? (candidate.vote_count / maxVotes) * 100 : 0;
-                          return (
-                            <div key={candidate.id}>
-                              <div className="flex justify-between text-xs font-bold text-slate-600 dark:text-slate-400 mb-1">
-                                <span>{candidate.name}</span>
-                                <span>{candidate.vote_count} votes</span>
-                              </div>
-                              <div className="h-2 bg-slate-100 dark:bg-slate-800 rounded-full overflow-hidden">
-                                <motion.div
-                                  initial={{ width: 0 }}
-                                  animate={{ width: `${percentage}%` }}
-                                  transition={{ duration: 0.8, ease: 'easeOut' }}
-                                  className="h-full rounded-full bg-gradient-to-r from-indigo-500 to-purple-500"
-                                />
-                              </div>
-                            </div>
-                          );
-                        })}
-                    </div>
-                  </div>
-                );
-              })}
-            </div>
-          </motion.section>
+          {/* No separate "Most Voted" section – bars are now integrated into candidate cards */}
         </motion.div>
       </main>
     </div>
