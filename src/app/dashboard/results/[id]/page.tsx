@@ -33,7 +33,7 @@ import {
 import { useAuth } from '@/app/providers';
 import { useState } from 'react';
 import Skeleton from '@/components/Skeleton';
-export const dynamic = 'force-dynamic'; // <-- ADD THIS
+export const dynamic = 'force-dynamic';
 
 const getMediaUrl = (path: string | null | undefined): string => {
   if (!path) return '/placeholder.png';
@@ -201,6 +201,7 @@ export default function ResultsDetailPage() {
   const remaining = Math.max(0, eligibleVoters - totalVotes);
   const turnoutPercent = eligibleVoters > 0 ? Math.round((totalVotes / eligibleVoters) * 100) : 0;
   const electionStatus = results.status;
+  const isPaidVoting = results.is_paid_voting || false;  // <-- NEW FLAG
 
   return (
     <motion.div
@@ -215,6 +216,7 @@ export default function ResultsDetailPage() {
         transition={{ repeat: Infinity, duration: 8, ease: 'easeInOut' }}
       />
 
+      {/* Header */}
       <motion.div variants={itemVariants}>
         <motion.button
           onClick={() => router.back()}
@@ -311,60 +313,62 @@ export default function ResultsDetailPage() {
         </div>
       </motion.div>
 
-      {/* Voter Turnout Scoreboard (unchanged) */}
-      <motion.div
-        variants={itemVariants}
-        className="bg-white/80 dark:bg-slate-900/80 backdrop-blur-xl rounded-3xl shadow-sm border border-slate-200/80 dark:border-slate-800/80 p-6 sm:p-8"
-      >
-        <div className="flex items-center justify-between mb-6">
-          <div className="flex items-center gap-3">
-            <div className="p-2.5 bg-indigo-50 dark:bg-indigo-950/50 rounded-2xl text-indigo-600 dark:text-indigo-400 border border-indigo-100 dark:border-indigo-900/50">
-              <Users className="w-5 h-5" />
+      {/* Voter Turnout Scoreboard – only for non-public elections */}
+      {!isPaidVoting && (
+        <motion.div
+          variants={itemVariants}
+          className="bg-white/80 dark:bg-slate-900/80 backdrop-blur-xl rounded-3xl shadow-sm border border-slate-200/80 dark:border-slate-800/80 p-6 sm:p-8"
+        >
+          <div className="flex items-center justify-between mb-6">
+            <div className="flex items-center gap-3">
+              <div className="p-2.5 bg-indigo-50 dark:bg-indigo-950/50 rounded-2xl text-indigo-600 dark:text-indigo-400 border border-indigo-100 dark:border-indigo-900/50">
+                <Users className="w-5 h-5" />
+              </div>
+              <div>
+                <h2 className="text-lg font-black text-slate-900 dark:text-white tracking-tight">Voter Turnout</h2>
+                <p className="text-xs text-slate-400 dark:text-slate-500">Overall turnout breakdown and completion metrics</p>
+              </div>
             </div>
-            <div>
-              <h2 className="text-lg font-black text-slate-900 dark:text-white tracking-tight">Voter Turnout</h2>
-              <p className="text-xs text-slate-400 dark:text-slate-500">Overall turnout breakdown and completion metrics</p>
+            <span className="text-xs font-black text-indigo-600 dark:text-indigo-400 bg-indigo-50 dark:bg-indigo-950/50 px-3 py-1 rounded-full border border-indigo-100 dark:border-indigo-900/50">
+              {turnoutPercent}% Completed
+            </span>
+          </div>
+
+          <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 mb-6">
+            <div className="bg-indigo-50/60 dark:bg-indigo-950/30 border border-indigo-100/80 dark:border-indigo-900/40 rounded-2xl p-4 text-center">
+              <p className="text-2xl sm:text-3xl font-black text-indigo-700 dark:text-indigo-300">
+                <AnimatedVoteCount count={eligibleVoters} />
+              </p>
+              <p className="text-xs font-bold uppercase tracking-wider text-indigo-500/80 dark:text-indigo-400/80 mt-1">Eligible Voters</p>
+            </div>
+            <div className="bg-emerald-50/60 dark:bg-emerald-950/30 border border-emerald-100/80 dark:border-emerald-900/40 rounded-2xl p-4 text-center">
+              <p className="text-2xl sm:text-3xl font-black text-emerald-700 dark:text-emerald-300">
+                <AnimatedVoteCount count={totalVotes} />
+              </p>
+              <p className="text-xs font-bold uppercase tracking-wider text-emerald-500/80 dark:text-emerald-400/80 mt-1">Votes Cast</p>
+            </div>
+            <div className="bg-amber-50/60 dark:bg-amber-950/30 border border-amber-100/80 dark:border-amber-900/40 rounded-2xl p-4 text-center">
+              <p className="text-2xl sm:text-3xl font-black text-amber-700 dark:text-amber-300">
+                <AnimatedVoteCount count={remaining} />
+              </p>
+              <p className="text-xs font-bold uppercase tracking-wider text-amber-500/80 dark:text-amber-400/80 mt-1">Remaining</p>
             </div>
           </div>
-          <span className="text-xs font-black text-indigo-600 dark:text-indigo-400 bg-indigo-50 dark:bg-indigo-950/50 px-3 py-1 rounded-full border border-indigo-100 dark:border-indigo-900/50">
-            {turnoutPercent}% Completed
-          </span>
-        </div>
+          <div className="w-full h-3 bg-slate-100 dark:bg-slate-800 rounded-full overflow-hidden p-0.5 border border-slate-200/60 dark:border-slate-700/50">
+            <motion.div
+              className="h-full bg-gradient-to-r from-indigo-500 via-purple-500 to-indigo-600 rounded-full"
+              initial={{ width: 0 }}
+              animate={{ width: `${Math.min(100, turnoutPercent)}%` }}
+              transition={{ duration: 0.8, ease: 'easeOut' }}
+            />
+          </div>
+          <p className="text-xs font-semibold text-slate-500 dark:text-slate-400 mt-3 text-center">
+            <AnimatedVoteCount count={totalVotes} /> of <AnimatedVoteCount count={eligibleVoters} /> voters participated ({turnoutPercent}%)
+          </p>
+        </motion.div>
+      )}
 
-        <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 mb-6">
-          <div className="bg-indigo-50/60 dark:bg-indigo-950/30 border border-indigo-100/80 dark:border-indigo-900/40 rounded-2xl p-4 text-center">
-            <p className="text-2xl sm:text-3xl font-black text-indigo-700 dark:text-indigo-300">
-              <AnimatedVoteCount count={eligibleVoters} />
-            </p>
-            <p className="text-xs font-bold uppercase tracking-wider text-indigo-500/80 dark:text-indigo-400/80 mt-1">Eligible Voters</p>
-          </div>
-          <div className="bg-emerald-50/60 dark:bg-emerald-950/30 border border-emerald-100/80 dark:border-emerald-900/40 rounded-2xl p-4 text-center">
-            <p className="text-2xl sm:text-3xl font-black text-emerald-700 dark:text-emerald-300">
-              <AnimatedVoteCount count={totalVotes} />
-            </p>
-            <p className="text-xs font-bold uppercase tracking-wider text-emerald-500/80 dark:text-emerald-400/80 mt-1">Votes Cast</p>
-          </div>
-          <div className="bg-amber-50/60 dark:bg-amber-950/30 border border-amber-100/80 dark:border-amber-900/40 rounded-2xl p-4 text-center">
-            <p className="text-2xl sm:text-3xl font-black text-amber-700 dark:text-amber-300">
-              <AnimatedVoteCount count={remaining} />
-            </p>
-            <p className="text-xs font-bold uppercase tracking-wider text-amber-500/80 dark:text-amber-400/80 mt-1">Remaining</p>
-          </div>
-        </div>
-        <div className="w-full h-3 bg-slate-100 dark:bg-slate-800 rounded-full overflow-hidden p-0.5 border border-slate-200/60 dark:border-slate-700/50">
-          <motion.div
-            className="h-full bg-gradient-to-r from-indigo-500 via-purple-500 to-indigo-600 rounded-full"
-            initial={{ width: 0 }}
-            animate={{ width: `${Math.min(100, turnoutPercent)}%` }}
-            transition={{ duration: 0.8, ease: 'easeOut' }}
-          />
-        </div>
-        <p className="text-xs font-semibold text-slate-500 dark:text-slate-400 mt-3 text-center">
-          <AnimatedVoteCount count={totalVotes} /> of <AnimatedVoteCount count={eligibleVoters} /> voters participated ({turnoutPercent}%)
-        </p>
-      </motion.div>
-
-      {/* Zero Votes State (unchanged) */}
+      {/* Zero Votes State */}
       {totalVotes === 0 && (
         <motion.div
           variants={itemVariants}

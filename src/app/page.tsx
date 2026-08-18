@@ -1,11 +1,12 @@
 'use client';
 import { motion, AnimatePresence, Variants } from 'framer-motion';
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import Link from 'next/link';
+import api from '@/lib/api';
 import {
   ArrowRight, Shield, Users, BarChart3, Zap, Star, CreditCard,
   ChevronRight, Lock, TrendingUp, Globe, Eye, Check, Sparkles, Building2,
-  Menu, X
+  Menu, X, Loader2, Flame
 } from 'lucide-react';
 
 // ─── Animated Number (simplified – always visible) ───────────────────────────
@@ -123,6 +124,24 @@ export default function LandingPage() {
   const [activeTab, setActiveTab] = useState('security');
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const feature = FEATURES.find((f) => f.id === activeTab)!;
+
+  // Live paid events
+  const [liveEvents, setLiveEvents] = useState<any[]>([]);
+  const [eventsLoading, setEventsLoading] = useState(true);
+
+  useEffect(() => {
+    const fetchEvents = async () => {
+      try {
+        const res = await api.get('/api/public/elections/');
+        setLiveEvents(res.data || []);
+      } catch (err) {
+        console.error('Failed to load live events', err);
+      } finally {
+        setEventsLoading(false);
+      }
+    };
+    fetchEvents();
+  }, []);
 
   return (
     <div className="min-h-screen bg-slate-50/50 dark:bg-slate-950 text-slate-900 dark:text-slate-50 font-sans overflow-x-hidden selection:bg-indigo-500 selection:text-white">
@@ -298,6 +317,73 @@ export default function LandingPage() {
               <VoteMockup />
             </motion.div>
           </div>
+        </div>
+      </section>
+
+      {/* Live Events Section – Bigger & More Unique */}
+      <section className="py-16 px-4 relative">
+        {/* Decorative background for Live Events */}
+        <div className="absolute inset-0 bg-gradient-to-b from-transparent via-indigo-50/50 to-transparent dark:via-indigo-950/20 pointer-events-none -z-10" />
+
+        <div className="max-w-7xl mx-auto">
+          <div className="text-center mb-12">
+            <span className="inline-flex items-center gap-2 text-emerald-600 dark:text-emerald-400 font-extrabold text-sm tracking-[0.2em] uppercase bg-emerald-50 dark:bg-emerald-950/40 px-4 py-1.5 rounded-full border border-emerald-100 dark:border-emerald-900/50">
+              <Flame className="w-4 h-4 fill-current" /> Live Now
+            </span>
+            <h2 className="text-4xl sm:text-6xl font-black text-slate-900 dark:text-white tracking-tight mt-4 mb-4">
+              Trending Paid Voting Events
+            </h2>
+            <p className="text-base sm:text-lg text-slate-500 dark:text-slate-400 max-w-xl mx-auto">
+              Support your favourite candidate – vote directly, no login required.
+            </p>
+          </div>
+
+          {eventsLoading ? (
+            <div className="flex justify-center py-12">
+              <Loader2 className="w-10 h-10 animate-spin text-indigo-600" />
+            </div>
+          ) : liveEvents.length === 0 ? (
+            <p className="text-center text-slate-400 text-sm">No live paid events right now. Check back later!</p>
+          ) : (
+            <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-8">
+              {liveEvents.map((event) => (
+                <Link
+                  key={event.id}
+                  href={`/vote/${event.slug}`}
+                  className="group relative bg-white dark:bg-slate-900 p-8 rounded-[2rem] border-2 border-slate-200 dark:border-slate-800 shadow-md hover:shadow-2xl transition-all duration-300 hover:-translate-y-2 hover:border-indigo-400 dark:hover:border-indigo-600 overflow-hidden"
+                >
+                  {/* Top gradient accent */}
+                  <div className="absolute top-0 left-0 right-0 h-1.5 bg-gradient-to-r from-indigo-500 via-purple-500 to-pink-500" />
+
+                  <div className="flex items-center justify-between mb-5">
+                    <span className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-emerald-50 dark:bg-emerald-950/50 text-emerald-600 dark:text-emerald-400 text-xs font-bold border border-emerald-200 dark:border-emerald-900/50">
+                      <span className="h-2.5 w-2.5 rounded-full bg-emerald-500 animate-ping" /> LIVE
+                    </span>
+                    <span className="text-sm font-black text-indigo-600 dark:text-indigo-400 bg-indigo-50 dark:bg-indigo-950/40 px-3 py-1.5 rounded-full">
+                      GH₵ {event.vote_price}/vote
+                    </span>
+                  </div>
+
+                  <h3 className="text-2xl font-black text-slate-900 dark:text-white mb-3 group-hover:text-indigo-600 dark:group-hover:text-indigo-400 transition-colors leading-tight">
+                    {event.title}
+                  </h3>
+                  <p className="text-slate-600 dark:text-slate-400 text-base line-clamp-3 mb-6">{event.description}</p>
+
+                  <div className="flex items-center justify-between mt-auto pt-4 border-t border-slate-100 dark:border-slate-800">
+                    <span className="text-xs font-semibold text-slate-500 dark:text-slate-400">
+                      {event.organization_name}
+                    </span>
+                    <span className="inline-flex items-center gap-1 text-sm font-bold text-indigo-600 dark:text-indigo-400">
+                      Vote Now <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
+                    </span>
+                  </div>
+
+                  {/* Hover glow overlay */}
+                  <div className="absolute inset-0 bg-gradient-to-br from-indigo-500/5 to-purple-500/5 opacity-0 group-hover:opacity-100 pointer-events-none transition-opacity duration-300" />
+                </Link>
+              ))}
+            </div>
+          )}
         </div>
       </section>
 
@@ -563,12 +649,12 @@ export default function LandingPage() {
             initial={{ opacity: 0, scale: 0.96 }}
             animate={{ opacity: 1, scale: 1 }}
             className="relative bg-slate-950 rounded-[2.5rem] shadow-2xl text-center py-16 px-6 sm:px-14 overflow-hidden border border-indigo-800/40"
-           >
+          >
             <motion.h2
               initial={{ opacity: 0, y: 12 }}
               animate={{ opacity: 1, y: 0 }}
               className="text-3xl sm:text-5xl font-black text-white mb-5 relative z-10 tracking-tight"
-             >
+            >
               Ready to Upgrade Scale?
             </motion.h2>
             <p className="text-base sm:text-lg text-indigo-100/85 max-w-2xl mx-auto mb-10 relative z-10 leading-relaxed font-medium">
@@ -579,7 +665,7 @@ export default function LandingPage() {
               whileHover={{ scale: 1.05 }}
               whileTap={{ scale: 0.97 }}
               className="inline-flex items-center gap-3 bg-white hover:bg-indigo-50 text-indigo-950 font-black text-base px-8 py-4 rounded-2xl shadow-xl transition-all relative z-10"
-             >
+            >
               Go to Billing <CreditCard className="w-5 h-5 text-indigo-600" />
             </motion.a>
           </motion.div>

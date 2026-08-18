@@ -10,9 +10,8 @@ import StatusBadge from '@/components/StatusBadge';
 import { Election } from '@/types';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link'; 
-export const dynamic = 'force-dynamic'; // <-- ADD THIS
+export const dynamic = 'force-dynamic';
 
-// Staggered motion variants for layout entrances
 const containerVariants = {
   hidden: { opacity: 0 },
   show: {
@@ -45,18 +44,18 @@ export default function ElectionsPage() {
     end_date: '',
     description: '',
     organization: '',
+    is_paid_voting: false,       // NEW
+    vote_price: '1.00',          // NEW
   });
 
   const isSuperAdmin = user?.role === 'SUPER_ADMIN';
 
-  // Fetch organizations (super admin only)
   const { data: organizations } = useQuery({
     queryKey: ['organizations'],
     queryFn: async () => (await api.get('/api/organizations/')).data,
     enabled: isSuperAdmin,
   });
 
-  // Fetch elections
   const { data: elections, isLoading } = useQuery({
     queryKey: ['elections'],
     queryFn: async () => {
@@ -65,7 +64,6 @@ export default function ElectionsPage() {
     },
   });
 
-  // Fetch current org limits (only for org admins)
   const { data: org } = useQuery({
     queryKey: ['my-organization'],
     queryFn: async () => {
@@ -76,7 +74,7 @@ export default function ElectionsPage() {
   });
 
   const electionCount = elections?.length || 0;
-  const maxElections = org?.max_elections ?? 100;   // fallback for super admin
+  const maxElections = org?.max_elections ?? 100;
   const limitReached = !isSuperAdmin && electionCount >= maxElections;
   const currentPlan = org?.plan || 'FREE';
   const canUpgrade = !isSuperAdmin && currentPlan !== 'ENTERPRISE';
@@ -94,6 +92,8 @@ export default function ElectionsPage() {
         description: data.description,
         start_date: formatDate(data.start_date),
         end_date: formatDate(data.end_date),
+        is_paid_voting: data.is_paid_voting,
+        vote_price: parseFloat(data.vote_price),
       };
       if (isSuperAdmin && data.organization) payload.organization = data.organization;
       return api.post('/api/elections/', payload);
@@ -102,7 +102,16 @@ export default function ElectionsPage() {
       queryClient.invalidateQueries({ queryKey: ['elections'] });
       toast.success('Election created!');
       setShowModal(false);
-      setFormData({ title: '', election_type: 'MULTIPLE', start_date: '', end_date: '', description: '', organization: '' });
+      setFormData({
+        title: '',
+        election_type: 'MULTIPLE',
+        start_date: '',
+        end_date: '',
+        description: '',
+        organization: '',
+        is_paid_voting: false,
+        vote_price: '1.00',
+      });
     },
     onError: (err: any) => {
       const data = err.response?.data;
@@ -160,7 +169,6 @@ export default function ElectionsPage() {
           )}
         </div>
 
-        {/* Action Button */}
         {limitReached ? (
           <motion.div whileHover={{ scale: 1.02 }} whileTap={{ scale: 0.98 }}>
             <Link
@@ -184,7 +192,6 @@ export default function ElectionsPage() {
         )}
       </div>
 
-      {/* Limit Reached Banner */}
       {limitReached && (
         <motion.div
           initial={{ opacity: 0, y: -10 }}
@@ -206,7 +213,6 @@ export default function ElectionsPage() {
         </motion.div>
       )}
 
-      {/* Loading State */}
       {isLoading ? (
         <div className="flex flex-col justify-center items-center py-24 gap-3">
           <Loader2 className="w-10 h-10 animate-spin text-indigo-600 dark:text-indigo-400" />
@@ -228,7 +234,6 @@ export default function ElectionsPage() {
               className="bg-white/80 dark:bg-slate-900/80 backdrop-blur-xl rounded-3xl shadow-sm hover:shadow-xl hover:shadow-indigo-500/5 border border-slate-200/80 dark:border-slate-800/80 p-6 cursor-pointer transition-all relative group flex flex-col justify-between"
             >
               <div>
-                {/* Delete button wrapper */}
                 <div className="absolute top-4 right-4 z-20">
                   <motion.button
                     whileHover={{ scale: 1.1 }}
@@ -255,7 +260,6 @@ export default function ElectionsPage() {
                   </div>
                 </div>
 
-                {/* Details Breakdown */}
                 <div className="space-y-2.5 text-xs font-medium text-slate-600 dark:text-slate-400 bg-slate-50/80 dark:bg-slate-800/40 rounded-2xl p-3.5 border border-slate-100 dark:border-slate-800/60">
                   <div className="flex justify-between items-center">
                     <span className="flex items-center gap-1.5 text-slate-400"><Layers className="w-3.5 h-3.5" /> Type:</span>
@@ -278,7 +282,6 @@ export default function ElectionsPage() {
                 </div>
               </div>
 
-              {/* Action Buttons inside Card */}
               {(election.status === 'DRAFT' || election.status === 'SCHEDULED') && (
                 <motion.button
                   whileHover={{ scale: 1.01 }}
@@ -294,7 +297,6 @@ export default function ElectionsPage() {
         </motion.div>
       )}
 
-      {/* Empty State */}
       {!isLoading && (!elections || elections.length === 0) && (
         <div className="text-center py-20 bg-white/50 dark:bg-slate-900/50 backdrop-blur-xl rounded-3xl border border-dashed border-slate-200 dark:border-slate-800">
           <div className="w-16 h-16 bg-slate-100 dark:bg-slate-800 text-slate-400 rounded-2xl flex items-center justify-center mx-auto mb-4">
@@ -405,6 +407,36 @@ export default function ElectionsPage() {
                     className="w-full px-4 py-2.5 bg-slate-50 dark:bg-slate-800/50 border border-slate-200 dark:border-slate-700/80 text-slate-900 dark:text-slate-100 rounded-xl focus:ring-2 focus:ring-indigo-500 outline-none text-sm font-medium"
                     required
                   />
+                </div>
+
+                {/* Paid Voting Section */}
+                <div className="bg-slate-50 dark:bg-slate-800/40 border border-slate-200 dark:border-slate-700/60 rounded-2xl p-4">
+                  <div className="flex items-center justify-between">
+                    <label className="text-xs font-bold text-slate-700 dark:text-slate-300 uppercase tracking-wider">Paid Voting</label>
+                    <input
+                      type="checkbox"
+                      checked={formData.is_paid_voting}
+                      onChange={(e) => setFormData({ ...formData, is_paid_voting: e.target.checked })}
+                      className="h-4 w-4 rounded border-slate-300 text-indigo-600 focus:ring-indigo-500"
+                    />
+                  </div>
+                  {formData.is_paid_voting && (
+                    <div className="mt-3">
+                      <label className="block text-xs font-bold text-slate-600 dark:text-slate-300 uppercase tracking-wider mb-1">
+                        Price per Vote (GH₵)
+                      </label>
+                      <input
+                        type="number"
+                        step="0.01"
+                        min="0.01"
+                        value={formData.vote_price}
+                        onChange={(e) => setFormData({ ...formData, vote_price: e.target.value })}
+                        className="w-full px-4 py-2.5 bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-700 text-slate-900 dark:text-slate-100 rounded-xl focus:ring-2 focus:ring-indigo-500 outline-none text-sm"
+                        placeholder="1.00"
+                        required={formData.is_paid_voting}
+                      />
+                    </div>
+                  )}
                 </div>
 
                 <div className="flex justify-end gap-3 pt-4">

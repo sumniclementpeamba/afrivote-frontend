@@ -2,21 +2,23 @@
 import { useParams, useRouter } from 'next/navigation';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import api from '@/lib/api';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import toast from 'react-hot-toast';
 import {
   ArrowLeft, Plus, UserPlus, X, Loader2, Vote, Briefcase,
-  Users, Upload, GripVertical, Sparkles, Layers
+  Users, Upload, GripVertical, Sparkles, Layers, LinkIcon, Copy
 } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import StatusBadge from '@/components/StatusBadge';
 import ReorderCandidatesModal from '@/components/ReorderCandidatesModal';
-export const dynamic = 'force-dynamic'; // <-- ADD THIS
+
+export const dynamic = 'force-dynamic';
 
 const getMediaUrl = (path: string | null | undefined): string => {
   if (!path) return '';
   if (path.startsWith('http')) return path;
-  return `path${path}`;
+  const baseUrl = process.env.NEXT_PUBLIC_API_URL || 'http://127.0.0.1:8000';
+  return `${baseUrl}${path}`;
 };
 
 // Motion variants
@@ -51,6 +53,7 @@ export default function ElectionDetailPage() {
   const [newCandidate, setNewCandidate] = useState({
     name: '', department: '', email: '', photo: null as File | null,
   });
+  const [publicUrl, setPublicUrl] = useState('');
 
   const { data: election, isLoading: electionLoading } = useQuery({
     queryKey: ['election', id],
@@ -69,6 +72,15 @@ export default function ElectionDetailPage() {
     },
     enabled: !!id,
   });
+
+  // Compute public URL when slug is available
+  useEffect(() => {
+    if (election?.slug) {
+      setPublicUrl(`${window.location.origin}/vote/${election.slug}`);
+    } else {
+      setPublicUrl('');
+    }
+  }, [election]);
 
   const canEdit = election?.status === 'DRAFT' || election?.status === 'SCHEDULED';
 
@@ -148,6 +160,41 @@ export default function ElectionDetailPage() {
           </div>
         </div>
       </motion.div>
+
+      {/* Public Link Section */}
+      {publicUrl && (
+        <motion.div
+          variants={itemVariants}
+          className="bg-white/80 dark:bg-slate-900/80 backdrop-blur-xl rounded-3xl border border-slate-200/80 dark:border-slate-800/80 p-6 sm:p-8 shadow-sm"
+        >
+          <div className="flex items-center gap-3 mb-4">
+            <div className="p-2.5 bg-indigo-50 dark:bg-indigo-950/50 rounded-2xl text-indigo-600 dark:text-indigo-400 border border-indigo-100 dark:border-indigo-900/50">
+              <LinkIcon className="w-5 h-5" />
+            </div>
+            <div>
+              <h2 className="text-lg font-black text-slate-900 dark:text-white tracking-tight">Public Voting Link</h2>
+              <p className="text-xs text-slate-400 dark:text-slate-500">Share this short link with voters</p>
+            </div>
+          </div>
+          <div className="flex flex-col sm:flex-row gap-3 items-center">
+            <input
+              type="text"
+              value={publicUrl}
+              readOnly
+              className="flex-1 w-full px-4 py-2.5 bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl text-sm text-slate-700 dark:text-slate-300 font-mono"
+            />
+            <button
+              onClick={() => {
+                navigator.clipboard.writeText(publicUrl);
+                toast.success('Public link copied!');
+              }}
+              className="flex items-center gap-1.5 px-4 py-2.5 bg-indigo-600 hover:bg-indigo-500 text-white rounded-xl text-xs font-bold shadow-lg transition"
+            >
+              <Copy className="w-4 h-4" /> Copy
+            </button>
+          </div>
+        </motion.div>
+      )}
 
       {/* Positions Section */}
       <motion.div

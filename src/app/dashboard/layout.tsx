@@ -8,7 +8,8 @@ import Link from 'next/link';
 import SetupFeeGate from '@/components/SetupFeeGate';
 import {
   Sun, Moon, Menu, X, Zap, LogOut, LayoutDashboard, Building2,
-  Vote, Award, Users, UserCheck, BarChart3, CreditCard, ShieldCheck, FileText
+  Vote, Award, Users, UserCheck, BarChart3, CreditCard, ShieldCheck, FileText,
+  Wallet, Landmark, TrendingUp
 } from 'lucide-react';
 import PlanBadge from '@/components/PlanBadge';
 import { isSubscriptionExpired } from '@/utils/subscription';
@@ -35,7 +36,6 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
   const isRenewalPage = pathname === '/dashboard/renewal';
 
   useEffect(() => {
-    // If token is passed via URL (for private browsing support), save it to localStorage
     const params = new URLSearchParams(window.location.search);
     const urlToken = params.get('token');
     const urlRole = params.get('role');
@@ -81,6 +81,14 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
     if (window.innerWidth < 768) {
       setSidebarOpen(false);
     }
+  };
+
+  // Helper to determine if a nav item is active
+  const isNavActive = (href: string) => {
+    if (href === '/dashboard') {
+      return pathname === '/dashboard';
+    }
+    return pathname === href || pathname.startsWith(href + '/');
   };
 
   if (!token) {
@@ -151,29 +159,38 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
 
           {/* Navigation Items */}
           <nav className="flex-1 overflow-y-auto space-y-1.5 pr-1 scrollbar-thin scrollbar-thumb-slate-200 dark:scrollbar-thumb-slate-800">
-            <AnimatedNavItem href="/dashboard" Icon={LayoutDashboard} label="Dashboard" onClick={handleLinkClick} />
+            <AnimatedNavItem
+              href="/dashboard"
+              Icon={LayoutDashboard}
+              label="Dashboard"
+              onClick={handleLinkClick}
+              active={isNavActive('/dashboard')}
+            />
 
             {isSuperAdmin ? (
               <>
-                <AnimatedNavItem href="/dashboard/organizations" Icon={Building2} label="Organizations" onClick={handleLinkClick} />
-                <AnimatedNavItem href="/dashboard/elections" Icon={Vote} label="Elections" onClick={handleLinkClick} />
-                <AnimatedNavItem href="/dashboard/positions" Icon={Award} label="Positions" onClick={handleLinkClick} />
-                <AnimatedNavItem href="/dashboard/candidates" Icon={Users} label="Candidates" onClick={handleLinkClick} />
-                <AnimatedNavItem href="/dashboard/voters" Icon={UserCheck} label="Voters" onClick={handleLinkClick} />
-                <AnimatedNavItem href="/dashboard/results" Icon={BarChart3} label="Results" onClick={handleLinkClick} />
-                <AnimatedNavItem href="/dashboard/upgrade-requests" Icon={CreditCard} label="Upgrade Requests" onClick={handleLinkClick} />
-                <AnimatedNavItem href="/dashboard/audit-logs" Icon={FileText} label="Audit Logs" onClick={handleLinkClick} />
+                <AnimatedNavItem href="/dashboard/organizations" Icon={Building2} label="Organizations" onClick={handleLinkClick} active={isNavActive('/dashboard/organizations')} />
+                <AnimatedNavItem href="/dashboard/elections" Icon={Vote} label="Elections" onClick={handleLinkClick} active={isNavActive('/dashboard/elections')} />
+                <AnimatedNavItem href="/dashboard/positions" Icon={Award} label="Positions" onClick={handleLinkClick} active={isNavActive('/dashboard/positions')} />
+                <AnimatedNavItem href="/dashboard/candidates" Icon={Users} label="Candidates" onClick={handleLinkClick} active={isNavActive('/dashboard/candidates')} />
+                <AnimatedNavItem href="/dashboard/voters" Icon={UserCheck} label="Voters" onClick={handleLinkClick} active={isNavActive('/dashboard/voters')} />
+                <AnimatedNavItem href="/dashboard/results" Icon={BarChart3} label="Results" onClick={handleLinkClick} active={isNavActive('/dashboard/results')} />
+                <AnimatedNavItem href="/dashboard/upgrade-requests" Icon={CreditCard} label="Upgrade Requests" onClick={handleLinkClick} active={isNavActive('/dashboard/upgrade-requests')} />
+                <AnimatedNavItem href="/dashboard/audit-logs" Icon={FileText} label="Audit Logs" onClick={handleLinkClick} active={isNavActive('/dashboard/audit-logs')} />
+                <AnimatedNavItem href="/dashboard/withdrawals" Icon={Landmark} label="Withdrawals" onClick={handleLinkClick} active={isNavActive('/dashboard/withdrawals')} />
+                <AnimatedNavItem href="/dashboard/earnings" Icon={TrendingUp} label="Earnings" onClick={handleLinkClick} active={isNavActive('/dashboard/earnings')} />
               </>
             ) : (
               <>
-                <AnimatedNavItem href="/dashboard/organization" Icon={Building2} label="My Organization" onClick={handleLinkClick} />
-                <AnimatedNavItem href="/dashboard/elections" Icon={Vote} label="Elections" onClick={handleLinkClick} />
-                <AnimatedNavItem href="/dashboard/positions" Icon={Award} label="Positions" onClick={handleLinkClick} />
-                <AnimatedNavItem href="/dashboard/candidates" Icon={Users} label="Candidates" onClick={handleLinkClick} />
-                <AnimatedNavItem href="/dashboard/voters" Icon={UserCheck} label="Voters" onClick={handleLinkClick} />
-                <AnimatedNavItem href="/dashboard/results" Icon={BarChart3} label="Results" onClick={handleLinkClick} />
-                <AnimatedNavItem href="/dashboard/billing" Icon={CreditCard} label="Billing" onClick={handleLinkClick} />
-                <AnimatedNavItem href="/dashboard/audit-logs" Icon={FileText} label="Audit Logs" onClick={handleLinkClick} />
+                <AnimatedNavItem href="/dashboard/organization" Icon={Building2} label="My Organization" onClick={handleLinkClick} active={isNavActive('/dashboard/organization')} />
+                <AnimatedNavItem href="/dashboard/elections" Icon={Vote} label="Elections" onClick={handleLinkClick} active={isNavActive('/dashboard/elections')} />
+                <AnimatedNavItem href="/dashboard/positions" Icon={Award} label="Positions" onClick={handleLinkClick} active={isNavActive('/dashboard/positions')} />
+                <AnimatedNavItem href="/dashboard/candidates" Icon={Users} label="Candidates" onClick={handleLinkClick} active={isNavActive('/dashboard/candidates')} />
+                <AnimatedNavItem href="/dashboard/voters" Icon={UserCheck} label="Voters" onClick={handleLinkClick} active={isNavActive('/dashboard/voters')} />
+                <AnimatedNavItem href="/dashboard/results" Icon={BarChart3} label="Results" onClick={handleLinkClick} active={isNavActive('/dashboard/results')} />
+                <AnimatedNavItem href="/dashboard/billing" Icon={CreditCard} label="Billing" onClick={handleLinkClick} active={isNavActive('/dashboard/billing')} />
+                <AnimatedNavItem href="/dashboard/audit-logs" Icon={FileText} label="Audit Logs" onClick={handleLinkClick} active={isNavActive('/dashboard/audit-logs')} />
+                <AnimatedNavItem href="/dashboard/wallet" Icon={Wallet} label="Wallet" onClick={handleLinkClick} active={isNavActive('/dashboard/wallet')} />
               </>
             )}
           </nav>
@@ -261,25 +278,33 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
   );
 }
 
-// ─── Sub-Component for Navigation Items (plain) ──────────────────────────────
+// ─── Sub-Component for Navigation Items (with active state) ─────────────────
 const AnimatedNavItem = ({
   href,
   Icon,
   label,
-  onClick
+  onClick,
+  active = false,
 }: {
   href: string;
   Icon: React.ElementType;
   label: string;
   onClick: () => void;
+  active?: boolean;
 }) => {
   return (
     <Link
       href={href}
       onClick={onClick}
-      className="flex items-center gap-3 px-3.5 py-2.5 text-xs font-semibold rounded-xl text-slate-500 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white hover:bg-slate-100 dark:hover:bg-slate-800/80 active:bg-indigo-50 dark:active:bg-indigo-500/20 transition-all duration-150 group"
+      className={`flex items-center gap-3 px-3.5 py-2.5 text-xs font-semibold rounded-xl transition-all duration-150 group ${
+        active
+          ? 'bg-indigo-50 dark:bg-indigo-950/50 text-indigo-600 dark:text-indigo-400 border border-indigo-100 dark:border-indigo-900/50'
+          : 'text-slate-500 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white hover:bg-slate-100 dark:hover:bg-slate-800/80 active:bg-indigo-50 dark:active:bg-indigo-500/20'
+      }`}
     >
-      <Icon className="w-4 h-4 transition-transform group-hover:scale-110 group-hover:text-indigo-600 dark:group-hover:text-indigo-400" />
+      <Icon className={`w-4 h-4 transition-transform group-hover:scale-110 ${
+        active ? 'text-indigo-600 dark:text-indigo-400' : 'group-hover:text-indigo-600 dark:group-hover:text-indigo-400'
+      }`} />
       <span>{label}</span>
     </Link>
   );
