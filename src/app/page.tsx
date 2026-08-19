@@ -350,32 +350,45 @@ export default function LandingPage() {
                 <Link
                   key={event.id}
                   href={`/vote/${event.slug}`}
-                  className="group relative bg-white dark:bg-slate-900 p-8 rounded-[2rem] border-2 border-slate-200 dark:border-slate-800 shadow-md hover:shadow-2xl transition-all duration-300 hover:-translate-y-2 hover:border-indigo-400 dark:hover:border-indigo-600 overflow-hidden"
+                  className="group relative bg-white dark:bg-slate-900 rounded-[2rem] border-2 border-slate-200 dark:border-slate-800 shadow-md hover:shadow-2xl transition-all duration-300 hover:-translate-y-2 hover:border-indigo-400 dark:hover:border-indigo-600 overflow-hidden"
                 >
-                  {/* Top gradient accent */}
-                  <div className="absolute top-0 left-0 right-0 h-1.5 bg-gradient-to-r from-indigo-500 via-purple-500 to-pink-500" />
+                  {/* Event Image or Logo */}
+                  {event.event_image && (
+                    <img
+                      src={event.event_image}
+                      alt={event.title}
+                      className="w-full h-48 object-cover"
+                    />
+                  )}
 
-                  <div className="flex items-center justify-between mb-5">
-                    <span className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-emerald-50 dark:bg-emerald-950/50 text-emerald-600 dark:text-emerald-400 text-xs font-bold border border-emerald-200 dark:border-emerald-900/50">
-                      <span className="h-2.5 w-2.5 rounded-full bg-emerald-500 animate-ping" /> LIVE
-                    </span>
-                    <span className="text-sm font-black text-indigo-600 dark:text-indigo-400 bg-indigo-50 dark:bg-indigo-950/40 px-3 py-1.5 rounded-full">
-                      GH₵ {event.vote_price}/vote
-                    </span>
-                  </div>
+                  {/* Top gradient accent if no image */}
+                  {!event.event_image && (
+                    <div className="absolute top-0 left-0 right-0 h-1.5 bg-gradient-to-r from-indigo-500 via-purple-500 to-pink-500" />
+                  )}
 
-                  <h3 className="text-2xl font-black text-slate-900 dark:text-white mb-3 group-hover:text-indigo-600 dark:group-hover:text-indigo-400 transition-colors leading-tight">
-                    {event.title}
-                  </h3>
-                  <p className="text-slate-600 dark:text-slate-400 text-base line-clamp-3 mb-6">{event.description}</p>
+                  <div className="p-6">
+                    <div className="flex items-center justify-between mb-4">
+                      <span className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-emerald-50 dark:bg-emerald-950/50 text-emerald-600 dark:text-emerald-400 text-xs font-bold border border-emerald-200 dark:border-emerald-900/50">
+                        <span className="h-2.5 w-2.5 rounded-full bg-emerald-500 animate-ping" /> LIVE
+                      </span>
+                      <span className="text-sm font-black text-indigo-600 dark:text-indigo-400 bg-indigo-50 dark:bg-indigo-950/40 px-3 py-1.5 rounded-full">
+                        GH₵ {event.vote_price}/vote
+                      </span>
+                    </div>
 
-                  <div className="flex items-center justify-between mt-auto pt-4 border-t border-slate-100 dark:border-slate-800">
-                    <span className="text-xs font-semibold text-slate-500 dark:text-slate-400">
-                      {event.organization_name}
-                    </span>
-                    <span className="inline-flex items-center gap-1 text-sm font-bold text-indigo-600 dark:text-indigo-400">
-                      Vote Now <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
-                    </span>
+                    <h3 className="text-2xl font-black text-slate-900 dark:text-white mb-2 group-hover:text-indigo-600 dark:group-hover:text-indigo-400 transition-colors leading-tight">
+                      {event.title}
+                    </h3>
+                    <p className="text-slate-600 dark:text-slate-400 text-base line-clamp-3 mb-4">{event.description}</p>
+
+                    <div className="flex items-center justify-between pt-4 border-t border-slate-100 dark:border-slate-800">
+                      <span className="text-xs font-semibold text-slate-500 dark:text-slate-400">
+                        {event.organization_name}
+                      </span>
+                      <span className="inline-flex items-center gap-1 text-sm font-bold text-indigo-600 dark:text-indigo-400">
+                        Vote Now <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
+                      </span>
+                    </div>
                   </div>
 
                   {/* Hover glow overlay */}

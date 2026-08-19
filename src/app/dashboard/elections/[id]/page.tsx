@@ -6,7 +6,7 @@ import { useEffect, useState } from 'react';
 import toast from 'react-hot-toast';
 import {
   ArrowLeft, Plus, UserPlus, X, Loader2, Vote, Briefcase,
-  Users, Upload, GripVertical, Sparkles, Layers, LinkIcon, Copy
+  Users, Upload, GripVertical, Sparkles, Layers, LinkIcon, Copy, Code
 } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import StatusBadge from '@/components/StatusBadge';
@@ -19,6 +19,33 @@ const getMediaUrl = (path: string | null | undefined): string => {
   if (path.startsWith('http')) return path;
   const baseUrl = process.env.NEXT_PUBLIC_API_URL || 'http://127.0.0.1:8000';
   return `${baseUrl}${path}`;
+};
+
+// ─── Copy Helper (falls back to textarea if clipboard API blocked) ─────────
+const copyToClipboard = async (text: string) => {
+  if (navigator.clipboard && navigator.clipboard.writeText) {
+    try {
+      await navigator.clipboard.writeText(text);
+      return;
+    } catch (err) {
+      console.warn('Clipboard API failed, falling back to execCommand', err);
+    }
+  }
+
+  const textarea = document.createElement('textarea');
+  textarea.value = text;
+  textarea.style.position = 'fixed';
+  textarea.style.opacity = '0';
+  document.body.appendChild(textarea);
+  textarea.focus();
+  textarea.select();
+  try {
+    document.execCommand('copy');
+    document.body.removeChild(textarea);
+  } catch (err) {
+    document.body.removeChild(textarea);
+    throw err;
+  }
 };
 
 // Motion variants
@@ -184,13 +211,57 @@ export default function ElectionDetailPage() {
               className="flex-1 w-full px-4 py-2.5 bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl text-sm text-slate-700 dark:text-slate-300 font-mono"
             />
             <button
-              onClick={() => {
-                navigator.clipboard.writeText(publicUrl);
-                toast.success('Public link copied!');
+              onClick={async () => {
+                try {
+                  await copyToClipboard(publicUrl);
+                  toast.success('Public link copied!');
+                } catch (err) {
+                  toast.error('Copy failed – please copy manually');
+                }
               }}
               className="flex items-center gap-1.5 px-4 py-2.5 bg-indigo-600 hover:bg-indigo-500 text-white rounded-xl text-xs font-bold shadow-lg transition"
             >
               <Copy className="w-4 h-4" /> Copy
+            </button>
+          </div>
+        </motion.div>
+      )}
+
+      {/* Embed Code Section */}
+      {publicUrl && (
+        <motion.div
+          variants={itemVariants}
+          className="bg-white/80 dark:bg-slate-900/80 backdrop-blur-xl rounded-3xl border border-slate-200/80 dark:border-slate-800/80 p-6 sm:p-8 shadow-sm"
+        >
+          <div className="flex items-center gap-3 mb-4">
+            <div className="p-2.5 bg-indigo-50 dark:bg-indigo-950/50 rounded-2xl text-indigo-600 dark:text-indigo-400 border border-indigo-100 dark:border-indigo-900/50">
+              <Code className="w-5 h-5" />
+            </div>
+            <div>
+              <h2 className="text-lg font-black text-slate-900 dark:text-white tracking-tight">Embed Live Results</h2>
+              <p className="text-xs text-slate-400 dark:text-slate-500">Paste this code on any website to show live results</p>
+            </div>
+          </div>
+          <div className="flex flex-col sm:flex-row gap-3 items-start">
+            <textarea
+              readOnly
+              value={`<iframe src="${window.location.origin}/embed/${election.slug}" width="100%" height="500" frameborder="0"></iframe>`}
+              className="flex-1 w-full px-4 py-2.5 bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl text-sm text-slate-700 dark:text-slate-300 font-mono"
+              rows={3}
+            />
+            <button
+              onClick={async () => {
+                const embedCode = `<iframe src="${window.location.origin}/embed/${election.slug}" width="100%" height="500" frameborder="0"></iframe>`;
+                try {
+                  await copyToClipboard(embedCode);
+                  toast.success('Embed code copied!');
+                } catch (err) {
+                  toast.error('Copy failed – please copy manually');
+                }
+              }}
+              className="px-4 py-2.5 bg-indigo-600 hover:bg-indigo-500 text-white rounded-xl text-xs font-bold shadow-lg transition whitespace-nowrap"
+            >
+              Copy Code
             </button>
           </div>
         </motion.div>

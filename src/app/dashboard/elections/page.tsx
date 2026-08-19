@@ -4,7 +4,7 @@ import api from '@/lib/api';
 import { useState } from 'react';
 import { useAuth } from '@/app/providers';
 import toast from 'react-hot-toast';
-import { Plus, Play, X, Trash2, Loader2, Lock, ArrowUpRight, Sparkles, Calendar, Vote, Layers, Clock } from 'lucide-react';
+import { Plus, Play, X, Trash2, Loader2, Lock, ArrowUpRight, Sparkles, Calendar, Vote, Layers, Clock, Upload } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import StatusBadge from '@/components/StatusBadge';
 import { Election } from '@/types';
@@ -37,6 +37,7 @@ export default function ElectionsPage() {
   const { user } = useAuth();
   const router = useRouter();
   const [showModal, setShowModal] = useState(false);
+  const [eventImage, setEventImage] = useState<File | null>(null); // NEW
   const [formData, setFormData] = useState({
     title: '',
     election_type: 'MULTIPLE',
@@ -44,8 +45,8 @@ export default function ElectionsPage() {
     end_date: '',
     description: '',
     organization: '',
-    is_paid_voting: false,       // NEW
-    vote_price: '1.00',          // NEW
+    is_paid_voting: false,
+    vote_price: '1.00',
   });
 
   const isSuperAdmin = user?.role === 'SUPER_ADMIN';
@@ -86,17 +87,20 @@ export default function ElectionsPage() {
 
   const createMutation = useMutation({
     mutationFn: (data: typeof formData) => {
-      const payload: any = {
-        title: data.title,
-        election_type: data.election_type,
-        description: data.description,
-        start_date: formatDate(data.start_date),
-        end_date: formatDate(data.end_date),
-        is_paid_voting: data.is_paid_voting,
-        vote_price: parseFloat(data.vote_price),
-      };
-      if (isSuperAdmin && data.organization) payload.organization = data.organization;
-      return api.post('/api/elections/', payload);
+      const formDataPayload = new FormData();
+      formDataPayload.append('title', data.title);
+      formDataPayload.append('election_type', data.election_type);
+      formDataPayload.append('description', data.description);
+      formDataPayload.append('start_date', formatDate(data.start_date));
+      formDataPayload.append('end_date', formatDate(data.end_date));
+      formDataPayload.append('is_paid_voting', data.is_paid_voting ? 'true' : 'false');
+      formDataPayload.append('vote_price', data.vote_price);
+      if (isSuperAdmin && data.organization) formDataPayload.append('organization', data.organization);
+      if (eventImage) formDataPayload.append('event_image', eventImage);
+
+      return api.post('/api/elections/', formDataPayload, {
+        headers: { 'Content-Type': 'multipart/form-data' },
+      });
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['elections'] });
@@ -112,6 +116,7 @@ export default function ElectionsPage() {
         is_paid_voting: false,
         vote_price: '1.00',
       });
+      setEventImage(null); // NEW
     },
     onError: (err: any) => {
       const data = err.response?.data;
@@ -407,6 +412,28 @@ export default function ElectionsPage() {
                     className="w-full px-4 py-2.5 bg-slate-50 dark:bg-slate-800/50 border border-slate-200 dark:border-slate-700/80 text-slate-900 dark:text-slate-100 rounded-xl focus:ring-2 focus:ring-indigo-500 outline-none text-sm font-medium"
                     required
                   />
+                </div>
+
+                {/* Event Image / Logo */}
+                <div>
+                  <label className="block text-xs font-bold text-slate-600 dark:text-slate-300 uppercase tracking-wider mb-2">Event Image / Logo</label>
+                  <div className="flex items-center gap-3">
+                    <label className="cursor-pointer bg-slate-50 dark:bg-slate-800/50 hover:bg-slate-100 dark:hover:bg-slate-800 px-4 py-2.5 rounded-xl border border-slate-200 dark:border-slate-700 flex items-center gap-2 text-xs font-bold text-slate-700 dark:text-slate-300 transition-colors">
+                      <Upload className="w-4 h-4 text-slate-400" />
+                      Choose File
+                      <input
+                        type="file"
+                        accept="image/*"
+                        className="hidden"
+                        onChange={(e) => setEventImage(e.target.files?.[0] || null)}
+                      />
+                    </label>
+                    {eventImage && (
+                      <span className="text-xs font-medium text-slate-600 dark:text-slate-400 truncate max-w-[180px]">
+                        {eventImage.name}
+                      </span>
+                    )}
+                  </div>
                 </div>
 
                 {/* Paid Voting Section */}
